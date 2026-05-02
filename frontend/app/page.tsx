@@ -811,7 +811,7 @@ function Home({setPage,setSq,setSelectedProduct,setCompareList}:{
     <div>
       {/* Hero */}
       <div className="mt-hero">
-        <div className="mt-hero-eyebrow"><div className="mt-hero-eyebrow-dot"/>India's #1 Health Price Tracker</div>
+        <div className="mt-hero-eyebrow"><div className="mt-hero-eyebrow-dot"/>India's 1st Healthcare Utilitie's Price Tracker</div>
         <h1>
           <span className="line1">Never Overpay for</span>
           <span className="line2">Your Health Again</span>
