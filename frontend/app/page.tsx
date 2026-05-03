@@ -85,664 +85,715 @@ const PRODUCTS: Product[] = [
 ];
 
 const CATEGORIES = [
-  {name:"Vitamins & Minerals",icon:"💊",count:0,grad:"from-amber-500/20 to-orange-600/10"},
-  {name:"Protein & Fitness",icon:"💪",count:0,grad:"from-blue-500/20 to-cyan-600/10"},
-  {name:"Supplements",icon:"🌿",count:0,grad:"from-green-500/20 to-emerald-600/10"},
-  {name:"Ayurvedic",icon:"🍃",count:0,grad:"from-violet-500/20 to-purple-600/10"},
-  {name:"Weight Management",icon:"⚖️",count:0,grad:"from-red-500/20 to-pink-600/10"},
-  {name:"Women's Health",icon:"🌸",count:0,grad:"from-pink-500/20 to-rose-600/10"},
-  {name:"Diabetic Care",icon:"🩸",count:0,grad:"from-red-600/20 to-red-800/10"},
-  {name:"Heart Health",icon:"❤️",count:0,grad:"from-red-400/20 to-red-600/10"},
+  {name:"Vitamins & Minerals",icon:"💊",count:0},
+  {name:"Protein & Fitness",icon:"💪",count:0},
+  {name:"Supplements",icon:"🌿",count:0},
+  {name:"Ayurvedic",icon:"🍃",count:0},
+  {name:"Weight Management",icon:"⚖️",count:0},
+  {name:"Women's Health",icon:"🌸",count:0},
+  {name:"Diabetic Care",icon:"🩸",count:0},
+  {name:"Heart Health",icon:"❤️",count:0},
 ];
 
 const SITES = ["1mg","PharmEasy","Netmeds","Apollo","HealthKart","Amazon","Flipkart"];
 const disc = (p:number,m:number)=>Math.round(((m-p)/m)*100);
 
-// ── CSS ───────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// CSS
+// ─────────────────────────────────────────────────────────────────────────────
 const CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Fragment+Mono:ital@0;1&family=DM+Sans:ital,wght@0,200;0,300;0,400;0,500;1,300&display=swap');
+
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
 :root{
-  --bg:#050709;
-  --bg2:#080b10;
-  --bg3:#0c1018;
-  --surface:#0f131c;
-  --surface2:#141a26;
-  --surface3:#1a2030;
-  --glass:rgba(15,19,28,0.72);
-  --glass2:rgba(20,26,38,0.6);
-  --border:rgba(255,255,255,0.055);
-  --border2:rgba(255,255,255,0.1);
-  --border3:rgba(255,255,255,0.18);
-  --text:#eef2ff;
-  --text2:#7a869e;
-  --text3:#3d4a5c;
-  --accent:#4f94f8;
-  --accent2:#2a6be8;
-  --accent3:#1a4fc4;
-  --accent-glow:rgba(79,148,248,0.22);
-  --accent-glow2:rgba(79,148,248,0.08);
-  --green:#00e5a0;
-  --green2:#00b87d;
-  --green-glow:rgba(0,229,160,0.18);
-  --red:#ff5f6d;
-  --orange:#ffab40;
-  --purple:#a78bfa;
-  --cyan:#22d3ee;
-  --nav-h:58px;
-  --font:'Outfit',sans-serif;
-  --mono:'DM Mono',monospace;
-  --r:16px;
-  --r2:12px;
-  --r3:8px;
-  --ease:cubic-bezier(0.22,1,0.36,1);
+  --void:#000000;
+  --ink:#080808;
+  --plate:#0f0f0f;
+  --panel:#141414;
+  --lift:#1c1c1c;
+  --wire:rgba(255,255,255,0.07);
+  --wire2:rgba(255,255,255,0.12);
+  --wire3:rgba(255,255,255,0.22);
+  --smoke:#ffffff08;
+  --chalk:#f0ede6;
+  --ash:#6b6860;
+  --cinder:#323028;
+  --phosphor:#b8ff57;
+  --phosphor2:#8fcc2e;
+  --phosphor-dim:rgba(184,255,87,0.12);
+  --phosphor-glow:rgba(184,255,87,0.3);
+  --signal:#ff4d2e;
+  --ice:#c8e6ff;
+  --nav-h:56px;
+  --font:'DM Sans',sans-serif;
+  --display:'Bebas Neue',sans-serif;
+  --mono:'Fragment Mono',monospace;
+  --ease:cubic-bezier(0.16,1,0.3,1);
+  --ease2:cubic-bezier(0.76,0,0.24,1);
 }
 
-html{scroll-behavior:smooth}
-body{font-family:var(--font);background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;overflow-x:hidden;font-feature-settings:'ss01','cv01'}
-::-webkit-scrollbar{width:4px;height:4px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:4px}
-::-webkit-scrollbar-thumb:hover{background:var(--border2)}
+html{scroll-behavior:smooth;background:var(--void)}
+body{
+  font-family:var(--font);background:var(--void);color:var(--chalk);
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  cursor:crosshair;
+}
+::-webkit-scrollbar{width:2px}
+::-webkit-scrollbar-track{background:var(--void)}
+::-webkit-scrollbar-thumb{background:var(--phosphor)}
+::selection{background:var(--phosphor);color:var(--void)}
 a{text-decoration:none;color:inherit}
-button{font-family:var(--font);cursor:pointer;border:none;background:none}
+button{font-family:var(--font);cursor:crosshair;border:none;background:none}
 
-/* ── NOISE OVERLAY ── */
+/* ── CURSOR ── */
+.mt-cursor{
+  position:fixed;width:8px;height:8px;background:var(--phosphor);border-radius:50%;
+  pointer-events:none;z-index:9999;transform:translate(-50%,-50%);
+  transition:transform 0.1s,width 0.3s,height 0.3s,background 0.3s;
+  mix-blend-mode:difference;
+}
+.mt-cursor-ring{
+  position:fixed;width:36px;height:36px;border:1px solid rgba(184,255,87,0.5);
+  border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);
+  transition:all 0.18s var(--ease);
+}
+
+/* ── SCANLINES ── */
+.mt-scan{
+  position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);
+}
+
+/* ── NOISE ── */
 .mt-noise{
-  position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.025;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-  background-repeat:repeat;background-size:180px 180px;
+  position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.04;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:128px;
 }
 
-/* ── GRID OVERLAY ── */
-.mt-grid-bg{
-  position:fixed;inset:0;z-index:0;pointer-events:none;
-  background-image:linear-gradient(rgba(255,255,255,0.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.018) 1px,transparent 1px);
-  background-size:60px 60px;mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,black 40%,transparent 100%);
+/* ── CORNER BRACKETS ── */
+.mt-bracket{
+  position:fixed;width:24px;height:24px;z-index:500;pointer-events:none;
+  border-color:var(--phosphor);border-style:solid;opacity:0.5;
 }
-
-/* ── AMBIENT ORBS ── */
-.mt-orb{position:fixed;border-radius:50%;filter:blur(120px);pointer-events:none;z-index:0;animation:orbFloat 12s ease-in-out infinite alternate}
-@keyframes orbFloat{from{transform:translate(0,0) scale(1)}to{transform:translate(20px,30px) scale(1.05)}}
+.mt-bracket.tl{top:16px;left:16px;border-width:1px 0 0 1px}
+.mt-bracket.tr{top:16px;right:16px;border-width:1px 1px 0 0}
+.mt-bracket.bl{bottom:16px;left:16px;border-width:0 0 1px 1px}
+.mt-bracket.br{bottom:16px;right:16px;border-width:0 1px 1px 0}
 
 /* ── NAV ── */
 .mt-nav{
   position:sticky;top:0;z-index:200;height:var(--nav-h);
-  display:flex;align-items:center;padding:0 1.75rem;gap:1rem;
-  background:rgba(5,7,9,0.8);backdrop-filter:blur(24px) saturate(180%);
-  border-bottom:1px solid var(--border);
-  animation:navSlide 0.7s var(--ease) both;
+  display:flex;align-items:center;padding:0 2rem;gap:1.5rem;
+  background:rgba(0,0,0,0.92);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--wire);
 }
-@keyframes navSlide{from{transform:translateY(-100%);opacity:0}to{transform:translateY(0);opacity:1}}
-
-.mt-logo{display:flex;align-items:center;gap:10px;cursor:pointer;flex-shrink:0;}
-.mt-logo-mark{
-  width:32px;height:32px;border-radius:9px;position:relative;
-  background:linear-gradient(135deg,var(--accent),var(--accent3));
-  display:flex;align-items:center;justify-content:center;font-size:14px;
-  box-shadow:0 0 24px var(--accent-glow),0 0 0 1px rgba(79,148,248,0.3);
+.mt-nav-logo{
+  display:flex;align-items:center;gap:10px;cursor:crosshair;flex-shrink:0;
+  font-family:var(--display);font-size:22px;letter-spacing:0.05em;color:var(--chalk);
+  line-height:1;
 }
-.mt-logo-text{font-size:16px;font-weight:800;letter-spacing:-0.04em;
-  background:linear-gradient(90deg,var(--text) 40%,#90b8ff);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.mt-logo-dot{color:var(--accent);-webkit-text-fill-color:var(--accent)}
-
+.mt-nav-logo-dot{color:var(--phosphor)}
 .mt-nav-search{
-  flex:1;max-width:480px;display:flex;align-items:center;
-  background:var(--surface);border:1px solid var(--border2);
-  border-radius:var(--r2);padding:0 12px;gap:8px;height:36px;
-  transition:border-color 0.25s,box-shadow 0.25s;
+  flex:1;max-width:440px;display:flex;align-items:center;
+  background:transparent;border-bottom:1px solid var(--wire2);
+  padding:0 0 6px 0;gap:10px;height:auto;
+  transition:border-color 0.3s;
 }
-.mt-nav-search:focus-within{border-color:rgba(79,148,248,0.5);box-shadow:0 0 0 3px var(--accent-glow2)}
-.mt-nav-search input{flex:1;background:none;border:none;outline:none;
-  font-family:var(--font);font-size:13px;color:var(--text);font-weight:400}
-.mt-nav-search input::placeholder{color:var(--text3)}
+.mt-nav-search:focus-within{border-color:var(--phosphor)}
+.mt-nav-search input{
+  flex:1;background:none;border:none;outline:none;
+  font-family:var(--mono);font-size:12px;color:var(--chalk);letter-spacing:0.05em;
+}
+.mt-nav-search input::placeholder{color:var(--ash);letter-spacing:0.05em}
 .mt-nav-search-btn{
-  background:var(--accent);color:#fff;border-radius:7px;
-  padding:4px 11px;font-size:12px;font-weight:600;
-  transition:all 0.2s;white-space:nowrap;
+  font-family:var(--mono);font-size:11px;color:var(--phosphor);
+  letter-spacing:0.12em;text-transform:uppercase;
+  padding:4px 0;transition:opacity 0.2s;border-bottom:1px solid var(--phosphor);
 }
-.mt-nav-search-btn:hover{background:var(--accent2);box-shadow:0 0 14px var(--accent-glow)}
-
-.mt-nav-links{display:flex;align-items:center;gap:1px;margin-left:auto;flex-shrink:0}
+.mt-nav-search-btn:hover{opacity:0.7}
+.mt-nav-links{display:flex;align-items:center;gap:0.25rem;margin-left:auto;flex-shrink:0}
 .mt-nav-link{
-  padding:6px 11px;border-radius:9px;font-size:13px;font-weight:500;
-  color:var(--text2);transition:all 0.2s var(--ease);cursor:pointer;display:flex;align-items:center;gap:5px;
-  position:relative;letter-spacing:-0.01em;
+  padding:6px 12px;font-family:var(--mono);font-size:10px;letter-spacing:0.12em;
+  text-transform:uppercase;color:var(--ash);transition:color 0.2s;cursor:crosshair;
+  display:flex;align-items:center;gap:6px;position:relative;
 }
-.mt-nav-link:hover{color:var(--text);background:rgba(255,255,255,0.05)}
-.mt-nav-link.active{color:var(--text);background:rgba(255,255,255,0.06)}
-.mt-nav-link.active::after{content:'';position:absolute;bottom:-1px;left:11px;right:11px;height:1.5px;background:var(--accent);border-radius:2px;box-shadow:0 0 8px var(--accent-glow)}
+.mt-nav-link:hover{color:var(--chalk)}
+.mt-nav-link.active{color:var(--phosphor)}
 .mt-cart-badge{
-  background:var(--red);color:#fff;border-radius:100px;
-  font-size:9px;font-weight:700;padding:1px 5px;min-width:16px;text-align:center;
-  animation:popIn 0.3s cubic-bezier(0.34,1.56,0.64,1) both;
+  background:var(--phosphor);color:var(--void);border-radius:2px;
+  font-family:var(--mono);font-size:9px;font-weight:700;padding:1px 4px;min-width:16px;
+  text-align:center;animation:blink 0.4s step-end;
 }
-@keyframes popIn{from{transform:scale(0)}to{transform:scale(1)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
 
 /* ── HERO ── */
 .mt-hero{
-  position:relative;z-index:1;padding:7rem 2rem 5rem;text-align:center;
-  overflow:hidden;
+  position:relative;z-index:1;min-height:100svh;
+  display:flex;flex-direction:column;justify-content:flex-end;
+  padding:3rem 2rem 5rem;overflow:hidden;
+  border-bottom:1px solid var(--wire);
 }
-.mt-hero::before{
-  content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(79,148,248,0.12) 0%,transparent 70%);
-  pointer-events:none;
+.mt-hero-bg{
+  position:absolute;inset:0;z-index:0;
+  background:
+    radial-gradient(ellipse 60% 40% at 80% 20%,rgba(184,255,87,0.04) 0%,transparent 70%),
+    radial-gradient(ellipse 40% 60% at 20% 80%,rgba(184,255,87,0.025) 0%,transparent 60%);
+}
+.mt-hero-grid{
+  position:absolute;inset:0;z-index:0;
+  background-image:
+    linear-gradient(var(--wire) 1px,transparent 1px),
+    linear-gradient(90deg,var(--wire) 1px,transparent 1px);
+  background-size:80px 80px;
+  mask-image:radial-gradient(ellipse 100% 100% at 50% 50%,black 30%,transparent 100%);
 }
 .mt-hero-eyebrow{
-  display:inline-flex;align-items:center;gap:8px;
-  background:rgba(79,148,248,0.08);border:1px solid rgba(79,148,248,0.18);
-  border-radius:100px;padding:5px 16px;font-size:11px;font-weight:600;
-  color:var(--accent);letter-spacing:0.1em;text-transform:uppercase;
-  margin-bottom:2.25rem;
-  animation:fadeUp 0.7s 0.1s var(--ease) both;
+  position:relative;z-index:1;
+  font-family:var(--mono);font-size:10px;letter-spacing:0.2em;
+  text-transform:uppercase;color:var(--phosphor);
+  display:flex;align-items:center;gap:12px;margin-bottom:2rem;
+  animation:fadeIn 1s 0.2s var(--ease) both;
 }
-.mt-hero-eyebrow-dot{width:5px;height:5px;border-radius:50%;background:var(--accent);animation:pulse 1.8s infinite;box-shadow:0 0 6px var(--accent-glow)}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.3;transform:scale(0.6)}}
+.mt-hero-eyebrow::before{content:'';width:40px;height:1px;background:var(--phosphor)}
+.mt-hero-eyebrow-dot{
+  width:4px;height:4px;background:var(--phosphor);border-radius:50%;
+  animation:pulse 2s infinite;box-shadow:0 0 8px var(--phosphor-glow);
+}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.2;transform:scale(0.5)}}
 
 .mt-hero h1{
-  font-size:clamp(3rem,6.5vw,5.5rem);font-weight:900;line-height:1.02;
-  letter-spacing:-0.05em;margin-bottom:1.5rem;
-  animation:fadeUp 0.7s 0.2s var(--ease) both;
+  position:relative;z-index:1;
+  font-family:var(--display);
+  font-size:clamp(5rem,14vw,14rem);
+  line-height:0.88;letter-spacing:0.01em;
+  color:var(--chalk);margin-bottom:0.2em;
+  animation:slideUp 1s 0.3s var(--ease) both;
 }
-.mt-hero h1 .line1{
-  background:linear-gradient(160deg,var(--text) 0%,rgba(238,242,255,0.7) 100%);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  display:block;
+.mt-hero h1 em{font-style:normal;color:var(--phosphor);-webkit-text-fill-color:var(--phosphor)}
+.mt-hero-sub{
+  position:relative;z-index:1;
+  display:flex;align-items:flex-end;justify-content:space-between;gap:2rem;
+  margin-top:2rem;
+  animation:fadeIn 1s 0.6s var(--ease) both;
 }
-.mt-hero h1 .line2{
-  background:linear-gradient(90deg,var(--accent) 0%,var(--cyan) 50%,var(--green) 100%);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  display:block;background-size:200%;
-  animation:shimmer 4s linear infinite;
+.mt-hero-desc{
+  font-size:14px;font-weight:300;color:var(--ash);
+  max-width:340px;line-height:1.8;letter-spacing:0.01em;
 }
-@keyframes shimmer{0%{background-position:0%}100%{background-position:200%}}
-
-.mt-hero p{
-  font-size:16px;font-weight:400;color:var(--text2);max-width:440px;margin:0 auto 2.75rem;
-  line-height:1.75;animation:fadeUp 0.7s 0.3s var(--ease) both;letter-spacing:-0.01em;
+.mt-hero-cta{
+  display:flex;flex-direction:column;align-items:flex-end;gap:1rem;flex-shrink:0;
 }
-
-.mt-hero-search{
-  max-width:600px;margin:0 auto;
-  background:var(--glass);border:1px solid var(--border2);
-  border-radius:18px;padding:5px;display:flex;gap:5px;align-items:center;
-  box-shadow:0 0 80px rgba(79,148,248,0.1),0 32px 80px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.06);
-  transition:border-color 0.3s,box-shadow 0.3s;
-  animation:fadeUp 0.7s 0.35s var(--ease) both;
-  backdrop-filter:blur(20px);
+.mt-hero-btn{
+  display:inline-flex;align-items:center;gap:10px;
+  font-family:var(--mono);font-size:11px;letter-spacing:0.15em;text-transform:uppercase;
+  color:var(--void);background:var(--phosphor);
+  padding:14px 28px;border-radius:2px;
+  transition:all 0.3s var(--ease);
+  box-shadow:0 0 40px var(--phosphor-dim);
 }
-.mt-hero-search:focus-within{
-  border-color:rgba(79,148,248,0.35);
-  box-shadow:0 0 100px rgba(79,148,248,0.15),0 0 0 4px rgba(79,148,248,0.07),0 32px 80px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.06);
+.mt-hero-btn:hover{
+  background:var(--chalk);transform:translateY(-2px);
+  box-shadow:0 0 60px rgba(184,255,87,0.2);
 }
-.mt-hero-search input{
-  flex:1;background:none;border:none;outline:none;
-  font-family:var(--font);font-size:15px;color:var(--text);padding:11px 14px;font-weight:400;letter-spacing:-0.01em;
+.mt-hero-btn:active{transform:translateY(0)}
+.mt-hero-scroll{
+  font-family:var(--mono);font-size:9px;letter-spacing:0.2em;
+  color:var(--ash);text-transform:uppercase;
+  display:flex;align-items:center;gap:8px;
 }
-.mt-hero-search input::placeholder{color:var(--text3)}
-.mt-hero-search-btn{
-  background:linear-gradient(135deg,var(--accent),var(--accent3));color:#fff;
-  border-radius:13px;padding:13px 26px;font-size:14px;font-weight:700;
-  white-space:nowrap;transition:all 0.25s var(--ease);letter-spacing:-0.01em;
-  box-shadow:0 4px 24px var(--accent-glow);
+.mt-hero-scroll::after{
+  content:'';width:1px;height:40px;background:linear-gradient(var(--ash),transparent);
+  animation:scrollLine 2s ease-in-out infinite;
 }
-.mt-hero-search-btn:hover{transform:scale(0.97);box-shadow:0 6px 32px var(--accent-glow)}
-.mt-hero-search-btn:active{transform:scale(0.95)}
+@keyframes scrollLine{0%,100%{opacity:0.3;transform:scaleY(0.5)}50%{opacity:1;transform:scaleY(1)}}
 
 .mt-hero-stats{
-  display:flex;justify-content:center;gap:0;margin-top:3.5rem;flex-wrap:wrap;
-  animation:fadeUp 0.7s 0.45s var(--ease) both;
-  background:var(--glass);border:1px solid var(--border);border-radius:var(--r);
-  max-width:520px;margin:3.5rem auto 0;padding:0;
-  backdrop-filter:blur(12px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.05);overflow:hidden;
+  position:absolute;right:2rem;top:50%;transform:translateY(-50%);z-index:1;
+  display:flex;flex-direction:column;gap:2rem;
+  animation:fadeIn 1s 0.8s var(--ease) both;
 }
-.mt-stat{text-align:center;flex:1;padding:1.25rem 1rem;position:relative}
-.mt-stat+.mt-stat{border-left:1px solid var(--border)}
+.mt-stat{text-align:right}
 .mt-stat-num{
-  font-size:24px;font-weight:900;letter-spacing:-0.05em;
-  background:linear-gradient(135deg,var(--text),#90b8ff);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  line-height:1;
+  font-family:var(--display);font-size:2.5rem;line-height:1;
+  color:var(--chalk);letter-spacing:0.02em;
 }
-.mt-stat-label{font-size:11px;color:var(--text3);margin-top:4px;font-weight:500;letter-spacing:0.02em}
+.mt-stat-label{font-family:var(--mono);font-size:9px;color:var(--ash);letter-spacing:0.15em;text-transform:uppercase;margin-top:4px}
 
-/* ── TRUST BAR ── */
-.mt-trust{
+/* ── TICKER ── */
+.mt-ticker{
+  border-top:1px solid var(--wire);border-bottom:1px solid var(--wire);
+  background:var(--ink);overflow:hidden;
+  font-family:var(--mono);font-size:10px;letter-spacing:0.12em;
+  color:var(--ash);text-transform:uppercase;white-space:nowrap;
+  padding:10px 0;position:relative;z-index:1;
+}
+.mt-ticker-inner{display:inline-flex;gap:4rem;animation:ticker 25s linear infinite}
+@keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.mt-ticker-item{display:inline-flex;align-items:center;gap:8px}
+.mt-ticker-sep{color:var(--phosphor);font-size:8px}
+
+/* ── SECTION SHELL ── */
+.mt-section{
   position:relative;z-index:1;
-  border-top:1px solid var(--border);border-bottom:1px solid var(--border);
-  background:linear-gradient(90deg,var(--bg2),var(--bg3),var(--bg2));
-  padding:0.9rem 2rem;
-  display:flex;align-items:center;justify-content:center;gap:2.5rem;overflow-x:auto;
+  padding:5rem 2rem;max-width:1400px;margin:0 auto;width:100%;
 }
-.mt-trust-item{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:500;color:var(--text2);white-space:nowrap;letter-spacing:-0.01em}
+.mt-section-hd{
+  display:grid;grid-template-columns:1fr 1fr;align-items:start;
+  padding-bottom:2rem;border-bottom:1px solid var(--wire);margin-bottom:3rem;
+}
+.mt-section-label{
+  font-family:var(--mono);font-size:10px;letter-spacing:0.15em;
+  text-transform:uppercase;color:var(--phosphor);
+  display:flex;align-items:center;gap:8px;
+}
+.mt-section-label::before{content:'[';color:var(--ash)}
+.mt-section-label::after{content:']';color:var(--ash)}
+.mt-section-title{
+  font-family:var(--display);font-size:clamp(3rem,6vw,6rem);
+  letter-spacing:0.02em;line-height:0.9;color:var(--chalk);
+  text-align:right;
+}
+.mt-section-title em{font-style:normal;color:var(--phosphor)}
 
-/* ── SECTIONS ── */
-.mt-section{position:relative;z-index:1;padding:3rem 2rem;max-width:1240px;margin:0 auto;width:100%}
-.mt-section-hd{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:1.75rem}
-.mt-section-title{font-size:22px;font-weight:800;letter-spacing:-0.04em}
-.mt-section-title em{font-style:normal;
-  background:linear-gradient(90deg,var(--accent),var(--cyan));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.mt-section-link{font-size:12px;color:var(--accent);font-weight:600;cursor:pointer;transition:opacity 0.2s;letter-spacing:-0.01em}
-.mt-section-link:hover{opacity:0.65}
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.mt-section-link{font-size:12px;color:var(--accent);font-weight:600;cursor:pointer;transition:opacity 0.2s;letter-spacing:-0.01em}
-.mt-section-link:hover{opacity:0.65}
-
-/* ── CATEGORIES ── */
-.mt-cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+/* ── CATEGORIES GRID ── */
+.mt-cats{display:grid;grid-template-columns:repeat(4,1fr);gap:0}
 .mt-cat{
-  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
-  padding:1.4rem 0.75rem;text-align:center;cursor:pointer;
+  border:1px solid var(--wire);border-collapse:collapse;
+  padding:2rem 1.5rem;cursor:crosshair;
+  transition:background 0.3s var(--ease);position:relative;overflow:hidden;
+  display:flex;flex-direction:column;gap:1rem;
+  margin:-1px 0 0 -1px;
+}
+.mt-cat::before{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
+  background:var(--phosphor);transform:scaleX(0);transform-origin:left;
+  transition:transform 0.4s var(--ease);
+}
+.mt-cat:hover{background:var(--plate)}
+.mt-cat:hover::before{transform:scaleX(1)}
+.mt-cat-num{
+  font-family:var(--mono);font-size:9px;color:var(--ash);letter-spacing:0.12em;
+  align-self:flex-end;
+}
+.mt-cat-icon{font-size:24px;line-height:1;filter:grayscale(0.3)}
+.mt-cat-name{font-size:13px;font-weight:400;color:var(--chalk);letter-spacing:-0.01em;line-height:1.3}
+.mt-cat-arrow{
+  font-family:var(--mono);font-size:12px;color:var(--phosphor);
+  align-self:flex-end;opacity:0;transform:translateX(-6px);
   transition:all 0.3s var(--ease);
-  display:flex;flex-direction:column;align-items:center;gap:8px;
-  position:relative;overflow:hidden;
 }
-.mt-cat::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(79,148,248,0.06),transparent 70%);opacity:0;transition:opacity 0.3s}
-.mt-cat:hover{border-color:var(--border2);background:var(--surface2);transform:translateY(-5px) scale(1.02);box-shadow:0 16px 48px rgba(0,0,0,0.4),0 0 0 1px rgba(79,148,248,0.08)}
-.mt-cat:hover::before{opacity:1}
-.mt-cat:active{transform:translateY(-2px) scale(1.00)}
-.mt-cat-icon{font-size:28px;line-height:1;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.4))}
-.mt-cat-name{font-size:11px;font-weight:700;color:var(--text);line-height:1.3;letter-spacing:-0.01em}
-.mt-cat-count{font-size:10px;color:var(--text3);font-family:var(--mono)}
+.mt-cat:hover .mt-cat-arrow{opacity:1;transform:translateX(0)}
 
-/* ── PRODUCT CARDS ── */
-.mt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
-.mt-card{
-  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
-  overflow:hidden;cursor:pointer;
-  transition:all 0.35s var(--ease);
-  display:flex;flex-direction:column;position:relative;
+/* ── PRODUCT LIST (Lusion editorial style) ── */
+.mt-prodlist{display:flex;flex-direction:column}
+.mt-prodrow{
+  display:grid;grid-template-columns:3rem 1fr auto auto;
+  align-items:center;gap:2rem;
+  padding:1.75rem 0;border-bottom:1px solid var(--wire);
+  cursor:crosshair;position:relative;overflow:hidden;
+  transition:padding 0.3s var(--ease);
+  group:true;
 }
-.mt-card::before{
-  content:'';position:absolute;inset:0;border-radius:var(--r);
-  background:linear-gradient(135deg,rgba(79,148,248,0.07),rgba(0,229,160,0.03) 60%,transparent);
-  opacity:0;transition:opacity 0.35s;pointer-events:none;
+.mt-prodrow::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:2px;
+  background:var(--phosphor);transform:scaleY(0);transition:transform 0.4s var(--ease);
 }
-.mt-card::after{
-  content:'';position:absolute;top:0;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(79,148,248,0.4),transparent);
-  opacity:0;transition:opacity 0.35s;
+.mt-prodrow:hover{padding-left:1rem;background:rgba(184,255,87,0.018)}
+.mt-prodrow:hover::before{transform:scaleY(1)}
+.mt-prodrow-idx{
+  font-family:var(--mono);font-size:11px;color:var(--ash);
+  letter-spacing:0.05em;text-align:right;
 }
-.mt-card:hover{
-  border-color:rgba(79,148,248,0.2);transform:translateY(-7px) scale(1.01);
-  box-shadow:0 28px 72px rgba(0,0,0,0.5),0 0 0 1px rgba(79,148,248,0.12);
+.mt-prodrow-info{min-width:0}
+.mt-prodrow-brand{font-family:var(--mono);font-size:9px;color:var(--phosphor);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:4px}
+.mt-prodrow-name{font-size:15px;font-weight:400;color:var(--chalk);letter-spacing:-0.01em;line-height:1.2}
+.mt-prodrow-tag{
+  display:inline-block;font-family:var(--mono);font-size:8px;letter-spacing:0.12em;
+  text-transform:uppercase;color:var(--void);background:var(--phosphor);
+  padding:2px 6px;border-radius:1px;margin-left:8px;vertical-align:middle;
 }
-.mt-card:hover::before{opacity:1}
-.mt-card:hover::after{opacity:1}
-.mt-card:active{transform:translateY(-3px) scale(1.005)}
-.mt-card-img{
-  aspect-ratio:1;
-  background:radial-gradient(ellipse at center,var(--surface2),var(--surface));
-  display:flex;align-items:center;justify-content:center;font-size:56px;
-  position:relative;border-bottom:1px solid var(--border);
+.mt-prodrow-meta{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.mt-prodrow-price{font-family:var(--display);font-size:2rem;color:var(--chalk);letter-spacing:0.02em;line-height:1}
+.mt-prodrow-disc{font-family:var(--mono);font-size:10px;color:var(--phosphor);letter-spacing:0.08em}
+.mt-prodrow-stores{font-family:var(--mono);font-size:9px;color:var(--ash);letter-spacing:0.08em}
+.mt-prodrow-cta{
+  font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--void);background:var(--phosphor);
+  padding:10px 18px;border-radius:2px;white-space:nowrap;
+  transition:all 0.2s var(--ease);
+  opacity:0;transform:translateX(8px);
 }
-.mt-card-tag{
-  position:absolute;top:10px;left:10px;
-  border-radius:7px;padding:3px 9px;font-size:9px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;
-  backdrop-filter:blur(8px);
-}
-.mt-card-tag.deal{background:rgba(255,171,64,0.15);color:var(--orange);border:1px solid rgba(255,171,64,0.25)}
-.mt-card-tag.best{background:rgba(0,229,160,0.12);color:var(--green);border:1px solid rgba(0,229,160,0.22)}
-.mt-card-tag.new{background:rgba(167,139,250,0.15);color:var(--purple);border:1px solid rgba(167,139,250,0.25)}
-.mt-card-body{padding:14px;flex:1;display:flex;flex-direction:column;gap:5px}
-.mt-card-brand{font-size:10px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.1em;font-family:var(--mono)}
-.mt-card-name{font-size:13px;font-weight:600;color:var(--text);line-height:1.35;letter-spacing:-0.01em}
-.mt-card-rating{display:flex;align-items:center;gap:5px}
-.mt-card-stars{color:var(--orange);font-size:11px}
-.mt-card-rnum{font-size:11px;font-weight:700;color:var(--text);font-family:var(--mono)}
-.mt-card-rcnt{font-size:10px;color:var(--text3)}
-.mt-card-price-row{display:flex;align-items:baseline;gap:6px;margin-top:auto;padding-top:8px}
-.mt-card-price{font-size:19px;font-weight:900;letter-spacing:-0.04em;font-family:var(--mono)}
-.mt-card-mrp{font-size:11px;color:var(--text3);text-decoration:line-through;font-family:var(--mono)}
-.mt-card-disc{font-size:11px;font-weight:700;color:var(--green)}
-.mt-card-sites{font-size:10px;color:var(--text3);margin-top:2px;letter-spacing:0.01em}
-.mt-card-cta{
-  background:rgba(79,148,248,0.08);color:var(--accent);border-radius:10px;
-  padding:9px 12px;font-size:12px;font-weight:700;width:100%;margin-top:8px;
-  transition:all 0.25s var(--ease);border:1px solid rgba(79,148,248,0.14);letter-spacing:-0.01em;
-}
-.mt-card-cta:hover{background:var(--accent);color:#fff;border-color:transparent;box-shadow:0 6px 20px var(--accent-glow)}
+.mt-prodrow:hover .mt-prodrow-cta{opacity:1;transform:translateX(0)}
 
 /* ── SITES STRIP ── */
-.mt-sites-strip{
-  background:var(--glass);border:1px solid var(--border);border-radius:var(--r);
-  padding:1.2rem 1.75rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;
-  backdrop-filter:blur(12px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.04);
+.mt-sites{
+  border-top:1px solid var(--wire);border-bottom:1px solid var(--wire);
+  background:var(--ink);padding:1.5rem 2rem;
+  display:flex;align-items:center;gap:2rem;overflow-x:auto;position:relative;z-index:1;
 }
-.mt-sites-label{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-right:0.25rem}
-.mt-site-pill{
-  background:var(--surface2);border:1px solid var(--border);border-radius:100px;
-  padding:5px 14px;font-size:12px;font-weight:600;color:var(--text2);
-  transition:all 0.2s var(--ease);cursor:pointer;font-family:var(--mono);letter-spacing:-0.01em;
+.mt-sites-label{font-family:var(--mono);font-size:9px;color:var(--ash);letter-spacing:0.15em;text-transform:uppercase;flex-shrink:0}
+.mt-site-tag{
+  font-family:var(--mono);font-size:10px;letter-spacing:0.1em;
+  color:var(--ash);border:1px solid var(--wire2);padding:5px 14px;border-radius:1px;
+  transition:all 0.2s;cursor:crosshair;white-space:nowrap;text-transform:uppercase;
 }
-.mt-site-pill:hover{border-color:rgba(79,148,248,0.4);color:var(--accent);background:rgba(79,148,248,0.07)}
+.mt-site-tag:hover{border-color:var(--phosphor);color:var(--phosphor)}
 
-/* ── SEARCH PAGE ── */
-.mt-search-layout{display:flex;gap:1.5rem;max-width:1240px;margin:0 auto;padding:1.5rem 2rem;width:100%;position:relative;z-index:1}
-.mt-sidebar{width:230px;flex-shrink:0;display:flex;flex-direction:column;gap:10px;align-self:start;position:sticky;top:calc(var(--nav-h) + 1rem)}
-.mt-filter-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.1rem}
-.mt-filter-title{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;font-family:var(--mono)}
-.mt-filter-opt{display:flex;align-items:center;gap:8px;padding:5px 0;cursor:pointer;transition:opacity 0.2s}
-.mt-filter-opt:hover{opacity:0.8}
-.mt-filter-cb{
-  width:15px;height:15px;border:1.5px solid var(--border2);border-radius:4px;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s;
-}
-.mt-filter-cb.on{background:var(--accent);border-color:var(--accent)}
-.mt-filter-cb.on::after{content:'✓';color:#fff;font-size:9px;font-weight:700}
-.mt-filter-label{font-size:12px;color:var(--text2);letter-spacing:-0.01em}
-.mt-filter-cnt{font-size:10px;color:var(--text3);margin-left:auto;font-family:var(--mono)}
-
-.mt-results-area{flex:1;min-width:0}
-.mt-results-bar{
-  display:flex;align-items:center;justify-content:space-between;
-  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
-  padding:10px 14px;margin-bottom:12px;
-}
-.mt-results-count{font-size:13px;font-weight:600;color:var(--text);letter-spacing:-0.02em}
-.mt-results-count span{color:var(--text3);font-weight:400}
-.mt-sort{
-  background:var(--surface2);border:1px solid var(--border);border-radius:var(--r3);
-  padding:5px 10px;font-family:var(--font);font-size:12px;color:var(--text);cursor:pointer;outline:none;
-}
-
-.mt-result-row{
-  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
-  padding:1.2rem;margin-bottom:10px;display:flex;gap:1rem;align-items:flex-start;
-  cursor:pointer;transition:all 0.3s var(--ease);
-  animation:fadeUp 0.4s var(--ease) both;position:relative;overflow:hidden;
-}
-.mt-result-row::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--accent);transform:scaleY(0);transition:transform 0.3s var(--ease);border-radius:0 2px 2px 0}
-.mt-result-row:hover{box-shadow:0 16px 48px rgba(0,0,0,0.4),0 0 0 1px rgba(79,148,248,0.1);border-color:rgba(79,148,248,0.15);transform:translateX(2px)}
-.mt-result-row:hover::before{transform:scaleY(1)}
-.mt-result-img{
-  width:80px;height:80px;background:radial-gradient(ellipse at center,var(--surface2),var(--surface));border-radius:var(--r2);
-  display:flex;align-items:center;justify-content:center;font-size:36px;flex-shrink:0;
-  border:1px solid var(--border);
-}
-.mt-result-info{flex:1;min-width:0}
-.mt-result-brand{font-size:10px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.1em;font-family:var(--mono)}
-.mt-result-name{font-size:15px;font-weight:700;color:var(--text);margin:3px 0 6px;line-height:1.3;letter-spacing:-0.02em}
-.mt-result-rating-chip{
-  display:inline-flex;align-items:center;gap:4px;
-  background:rgba(0,229,160,0.08);color:var(--green);border:1px solid rgba(0,229,160,0.18);
-  border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700;font-family:var(--mono);
-}
-.mt-result-rcnt{font-size:11px;color:var(--text3);margin-left:6px}
-.mt-result-highlights{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
-.mt-result-hl{
-  background:var(--surface2);border:1px solid var(--border);border-radius:5px;
-  padding:2px 8px;font-size:10px;font-weight:500;color:var(--text2);letter-spacing:-0.01em;
-}
-.mt-result-prices{display:flex;flex-direction:column;align-items:flex-end;gap:7px;min-width:155px}
-.mt-result-from{font-size:10px;color:var(--text3);font-family:var(--mono)}
-.mt-result-big{font-size:22px;font-weight:900;letter-spacing:-0.04em;font-family:var(--mono)}
-.mt-result-sub{display:flex;align-items:center;justify-content:flex-end;gap:4px}
-.mt-result-mrp{font-size:11px;color:var(--text3);text-decoration:line-through;font-family:var(--mono)}
-.mt-result-disc{font-size:11px;font-weight:700;color:var(--green)}
-.mt-result-sitecnt{font-size:10px;color:var(--text3);font-family:var(--mono)}
-.mt-result-btns{display:flex;gap:7px}
-.mt-result-view{
-  background:var(--surface2);color:var(--text2);border:1px solid var(--border);
-  border-radius:var(--r3);padding:8px 13px;font-size:12px;font-weight:600;
-  transition:all 0.2s var(--ease);white-space:nowrap;
-}
-.mt-result-view:hover{border-color:rgba(79,148,248,0.4);color:var(--accent)}
-.mt-result-add{
-  background:var(--accent);color:#fff;border-radius:var(--r3);
-  padding:8px 13px;font-size:12px;font-weight:600;transition:all 0.2s var(--ease);white-space:nowrap;
-  box-shadow:0 0 0 0 var(--accent-glow);
-}
-.mt-result-add:hover{background:var(--accent2);box-shadow:0 4px 16px var(--accent-glow)}
-.mt-result-add:active{transform:scale(0.97)}
-
-/* ── PRODUCT PAGE ── */
-.mt-product-layout{max-width:1240px;margin:0 auto;padding:1.75rem 2rem;display:flex;gap:2rem;position:relative;z-index:1}
-.mt-product-left{flex:1;min-width:0}
-.mt-product-right{width:310px;flex-shrink:0;position:sticky;top:calc(var(--nav-h) + 1rem);align-self:start}
-.mt-breadcrumb{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text3);margin-bottom:1.5rem;font-family:var(--mono)}
-.mt-breadcrumb span{cursor:pointer;transition:color 0.2s}
-.mt-breadcrumb span:hover{color:var(--accent)}
-.mt-breadcrumb-sep{color:var(--border2)}
-
-.mt-product-img-wrap{
-  background:radial-gradient(ellipse at 40% 40%,var(--surface2),var(--surface));
-  border:1px solid var(--border);border-radius:var(--r);
-  aspect-ratio:1;max-height:300px;display:flex;align-items:center;justify-content:center;
-  font-size:90px;margin-bottom:1.25rem;
+/* ── HOW IT WORKS ── */
+.mt-howgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid var(--wire)}
+.mt-howcard{
+  padding:3rem 2rem;border-right:1px solid var(--wire);border-bottom:1px solid var(--wire);
   position:relative;overflow:hidden;
 }
-.mt-product-img-wrap::before{
-  content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse at 30% 30%,rgba(79,148,248,0.09) 0%,transparent 60%);
+.mt-howcard:last-child{border-right:none}
+.mt-howcard-n{
+  font-family:var(--display);font-size:5rem;color:var(--wire2);line-height:1;
+  position:absolute;top:1rem;right:1.5rem;pointer-events:none;
 }
-.mt-product-detail-brand{font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.12em;font-family:var(--mono)}
-.mt-product-detail-name{font-size:24px;font-weight:900;letter-spacing:-0.04em;line-height:1.2;margin:6px 0 10px;color:var(--text)}
-.mt-product-detail-rtg{display:flex;align-items:center;gap:10px}
-.mt-rtg-chip{background:var(--green2);color:#fff;border-radius:8px;padding:4px 10px;font-size:13px;font-weight:700;font-family:var(--mono);display:flex;align-items:center;gap:4px}
-.mt-rtg-cnt{font-size:12px;color:var(--text3)}
-.mt-product-desc{font-size:13px;color:var(--text2);line-height:1.8;margin:1rem 0;letter-spacing:-0.005em}
-.mt-highlights-list{display:flex;flex-direction:column;gap:8px;margin:0.75rem 0}
-.mt-hl-item{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text2)}
-.mt-hl-dot{width:6px;height:6px;background:var(--green);border-radius:50%;flex-shrink:0;box-shadow:0 0 8px var(--green-glow)}
+.mt-howcard-icon{font-size:20px;margin-bottom:1.5rem;line-height:1}
+.mt-howcard-title{font-size:13px;font-weight:500;color:var(--chalk);letter-spacing:-0.01em;margin-bottom:0.75rem;line-height:1.3}
+.mt-howcard-desc{font-size:12px;font-weight:300;color:var(--ash);line-height:1.75}
 
-/* Price table */
-.mt-price-table{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-top:1.75rem}
-.mt-price-table-hd{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-.mt-price-table-title{font-size:15px;font-weight:800;letter-spacing:-0.03em}
-.mt-price-table-sub{font-size:11px;color:var(--text3);font-family:var(--mono)}
-.mt-price-row{display:flex;align-items:center;padding:13px 16px;border-bottom:1px solid var(--border);gap:12px;transition:background 0.2s}
+/* ── SEARCH PAGE ── */
+.mt-search-shell{max-width:1400px;margin:0 auto;padding:3rem 2rem;position:relative;z-index:1}
+.mt-search-topbar{
+  display:flex;align-items:center;gap:2rem;padding-bottom:1.5rem;
+  border-bottom:1px solid var(--wire);margin-bottom:2.5rem;
+}
+.mt-search-title{font-family:var(--display);font-size:3rem;letter-spacing:0.02em;color:var(--chalk)}
+.mt-search-count{font-family:var(--mono);font-size:11px;color:var(--ash);letter-spacing:0.1em;margin-left:auto}
+.mt-sort-sel{
+  background:transparent;border:1px solid var(--wire2);border-radius:1px;
+  padding:6px 12px;font-family:var(--mono);font-size:10px;color:var(--chalk);
+  cursor:crosshair;outline:none;letter-spacing:0.08em;
+  appearance:none;
+}
+.mt-search-layout{display:flex;gap:3rem}
+.mt-sidebar{width:200px;flex-shrink:0;align-self:start;position:sticky;top:calc(var(--nav-h) + 1rem)}
+.mt-filter-group{margin-bottom:2rem}
+.mt-filter-title{
+  font-family:var(--mono);font-size:9px;color:var(--phosphor);letter-spacing:0.18em;
+  text-transform:uppercase;margin-bottom:1rem;padding-bottom:0.5rem;
+  border-bottom:1px solid var(--wire);
+}
+.mt-filter-opt{
+  display:flex;align-items:center;gap:10px;padding:5px 0;cursor:crosshair;
+  transition:color 0.2s;
+}
+.mt-filter-opt:hover .mt-filter-label{color:var(--chalk)}
+.mt-filter-cb{
+  width:12px;height:12px;border:1px solid var(--wire3);border-radius:1px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s;
+}
+.mt-filter-cb.on{background:var(--phosphor);border-color:var(--phosphor)}
+.mt-filter-cb.on::after{content:'+';color:var(--void);font-size:10px;font-weight:700;font-family:var(--mono);line-height:1}
+.mt-filter-label{font-family:var(--mono);font-size:10px;color:var(--ash);letter-spacing:0.06em;transition:color 0.2s}
+.mt-filter-cnt{font-family:var(--mono);font-size:9px;color:var(--cinder);margin-left:auto}
+.mt-results-area{flex:1;min-width:0}
+.mt-result-row{
+  display:grid;grid-template-columns:60px 1fr auto;
+  gap:1.5rem;align-items:center;
+  padding:1.5rem 0;border-bottom:1px solid var(--wire);
+  cursor:crosshair;position:relative;overflow:hidden;
+  transition:background 0.2s;
+}
+.mt-result-row::before{content:'';position:absolute;left:0;top:0;bottom:0;width:1px;background:var(--phosphor);transform:scaleY(0);transition:transform 0.3s var(--ease)}
+.mt-result-row:hover{background:var(--smoke)}
+.mt-result-row:hover::before{transform:scaleY(1)}
+.mt-result-img{
+  width:60px;height:60px;background:var(--plate);border:1px solid var(--wire);
+  border-radius:2px;display:flex;align-items:center;justify-content:center;
+  font-size:24px;flex-shrink:0;
+}
+.mt-result-info{min-width:0}
+.mt-result-brand{font-family:var(--mono);font-size:9px;color:var(--phosphor);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:3px}
+.mt-result-name{font-size:14px;font-weight:400;color:var(--chalk);letter-spacing:-0.01em;margin-bottom:6px;line-height:1.3}
+.mt-result-rating-chip{
+  display:inline-flex;align-items:center;gap:4px;
+  font-family:var(--mono);font-size:9px;letter-spacing:0.1em;
+  color:var(--ash);
+}
+.mt-result-highlights{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.mt-result-hl{
+  font-family:var(--mono);font-size:9px;letter-spacing:0.06em;
+  color:var(--ash);border:1px solid var(--wire);padding:2px 8px;border-radius:1px;
+}
+.mt-result-prices{display:flex;flex-direction:column;align-items:flex-end;gap:8px;min-width:160px}
+.mt-result-from{font-family:var(--mono);font-size:9px;color:var(--ash);letter-spacing:0.1em;text-transform:uppercase}
+.mt-result-big{font-family:var(--display);font-size:2.4rem;color:var(--chalk);letter-spacing:0.02em;line-height:1}
+.mt-result-disc{font-family:var(--mono);font-size:9px;color:var(--phosphor);letter-spacing:0.08em}
+.mt-result-btns{display:flex;gap:8px}
+.mt-result-view{
+  font-family:var(--mono);font-size:9px;letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--ash);border:1px solid var(--wire2);padding:8px 14px;border-radius:1px;
+  transition:all 0.2s;
+}
+.mt-result-view:hover{border-color:var(--wire3);color:var(--chalk)}
+.mt-result-add{
+  font-family:var(--mono);font-size:9px;letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--void);background:var(--phosphor);padding:8px 14px;border-radius:1px;
+  transition:all 0.2s;
+}
+.mt-result-add:hover{background:var(--chalk)}
+
+/* ── PRODUCT PAGE ── */
+.mt-product-shell{max-width:1400px;margin:0 auto;padding:3rem 2rem;position:relative;z-index:1}
+.mt-breadcrumb{
+  font-family:var(--mono);font-size:10px;letter-spacing:0.1em;
+  color:var(--ash);margin-bottom:3rem;display:flex;align-items:center;gap:8px;
+}
+.mt-breadcrumb span{cursor:crosshair;transition:color 0.2s}
+.mt-breadcrumb span:hover{color:var(--phosphor)}
+.mt-breadcrumb-sep{color:var(--wire3)}
+.mt-product-layout{display:grid;grid-template-columns:1fr 360px;gap:4rem;align-items:start}
+.mt-product-left{}
+.mt-product-hero{
+  background:var(--ink);border:1px solid var(--wire);aspect-ratio:1;
+  max-height:340px;display:flex;align-items:center;justify-content:center;
+  font-size:80px;margin-bottom:2.5rem;position:relative;overflow:hidden;
+}
+.mt-product-hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 30% 30%,rgba(184,255,87,0.05),transparent 60%);
+}
+.mt-product-brand{font-family:var(--mono);font-size:9px;color:var(--phosphor);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:8px}
+.mt-product-name{font-family:var(--display);font-size:clamp(2rem,4vw,3.5rem);color:var(--chalk);letter-spacing:0.02em;line-height:0.95;margin-bottom:1.5rem}
+.mt-product-rtg{display:flex;align-items:center;gap:12px;margin-bottom:1.5rem}
+.mt-rtg-val{font-family:var(--mono);font-size:11px;color:var(--phosphor);letter-spacing:0.1em}
+.mt-rtg-cnt{font-family:var(--mono);font-size:10px;color:var(--ash);letter-spacing:0.08em}
+.mt-product-desc{font-size:13px;font-weight:300;color:var(--ash);line-height:1.85;margin-bottom:2rem;letter-spacing:0.01em;border-left:1px solid var(--wire2);padding-left:1.5rem}
+.mt-hl-grid{display:flex;flex-direction:column;gap:0}
+.mt-hl-item{
+  display:flex;align-items:center;gap:1rem;
+  padding:10px 0;border-bottom:1px solid var(--wire);
+  font-size:12px;color:var(--ash);font-weight:300;
+}
+.mt-hl-item:last-child{border-bottom:none}
+.mt-hl-marker{width:6px;height:1px;background:var(--phosphor);flex-shrink:0}
+
+/* Price comparison table */
+.mt-price-table{margin-top:2.5rem;border:1px solid var(--wire)}
+.mt-price-table-hd{
+  padding:1rem 1.25rem;border-bottom:1px solid var(--wire);
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--plate);
+}
+.mt-price-table-title{font-family:var(--mono);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--chalk)}
+.mt-price-table-sub{font-family:var(--mono);font-size:9px;color:var(--phosphor);letter-spacing:0.1em}
+.mt-price-row{
+  display:grid;grid-template-columns:2rem 1fr auto auto auto;
+  align-items:center;gap:1rem;padding:1rem 1.25rem;
+  border-bottom:1px solid var(--wire);transition:background 0.2s;
+}
 .mt-price-row:last-child{border-bottom:none}
-.mt-price-row:hover{background:rgba(255,255,255,0.02)}
-.mt-price-row.best{background:rgba(79,148,248,0.04)}
-.mt-price-row.best:hover{background:rgba(79,148,248,0.08)}
-.mt-price-row-rank{font-size:11px;font-weight:700;color:var(--text3);width:18px;flex-shrink:0;font-family:var(--mono)}
-.mt-price-row-site{flex:1}
-.mt-price-row-site-name{font-size:13px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:7px;letter-spacing:-0.01em}
+.mt-price-row:hover{background:var(--plate)}
+.mt-price-row.best{background:rgba(184,255,87,0.04)}
+.mt-price-row-rank{font-family:var(--mono);font-size:10px;color:var(--ash)}
+.mt-price-row-site{font-size:12px;color:var(--chalk);font-weight:400}
 .mt-best-badge{
-  background:rgba(0,229,160,0.1);color:var(--green);border:1px solid rgba(0,229,160,0.2);
-  border-radius:5px;padding:2px 7px;font-size:9px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;
+  font-family:var(--mono);font-size:8px;letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--void);background:var(--phosphor);padding:2px 6px;border-radius:1px;margin-left:6px;
 }
-.mt-price-row-delivery{font-size:10px;color:var(--green);font-weight:500;margin-top:2px}
-.mt-price-row-delivery.slow{color:var(--text3)}
-.mt-price-row-price{text-align:right}
-.mt-price-big{font-size:17px;font-weight:900;color:var(--text);font-family:var(--mono);letter-spacing:-0.03em}
-.mt-price-disc{font-size:10px;font-weight:700;color:var(--green)}
-.mt-price-oos{font-size:11px;color:var(--red)}
+.mt-price-delivery{font-family:var(--mono);font-size:9px;color:var(--ash);letter-spacing:0.06em}
+.mt-price-delivery.fast{color:var(--phosphor)}
+.mt-price-big{font-family:var(--display);font-size:1.6rem;color:var(--chalk);letter-spacing:0.02em}
+.mt-price-disc-sm{font-family:var(--mono);font-size:9px;color:var(--phosphor);letter-spacing:0.06em}
+.mt-price-oos{font-family:var(--mono);font-size:10px;color:var(--signal)}
 .mt-buy-row-btn{
-  background:var(--accent);color:#fff;border-radius:var(--r3);
-  padding:7px 14px;font-size:12px;font-weight:600;transition:all 0.2s var(--ease);white-space:nowrap;
+  font-family:var(--mono);font-size:9px;letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--void);background:var(--phosphor);padding:8px 14px;border-radius:1px;white-space:nowrap;
+  transition:all 0.2s;
 }
-.mt-buy-row-btn:hover{background:var(--accent2);box-shadow:0 4px 14px var(--accent-glow)}
+.mt-buy-row-btn:hover{background:var(--chalk)}
 .mt-notify-btn{
-  background:var(--surface2);color:var(--text3);border:1px solid var(--border);
-  border-radius:var(--r3);padding:7px 14px;font-size:12px;font-weight:600;
+  font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--ash);border:1px solid var(--wire2);padding:8px 14px;border-radius:1px;
 }
 
 /* Buy card */
-.mt-buy-card{
-  background:var(--glass);border:1px solid var(--border2);border-radius:var(--r);
-  overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.07);
-  backdrop-filter:blur(20px);
-}
-.mt-buy-card-hd{padding:18px 16px;border-bottom:1px solid var(--border);background:linear-gradient(135deg,rgba(79,148,248,0.07),transparent)}
-.mt-buy-card-best{font-size:10px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:6px;font-family:var(--mono)}
-.mt-buy-price{font-size:32px;font-weight:900;letter-spacing:-0.05em;color:var(--text);font-family:var(--mono)}
-.mt-buy-sub{display:flex;align-items:center;gap:6px;margin-top:5px}
-.mt-buy-mrp{font-size:12px;color:var(--text3);text-decoration:line-through;font-family:var(--mono)}
-.mt-buy-disc{font-size:12px;font-weight:700;color:var(--green)}
-.mt-buy-site{font-size:12px;color:var(--text2);margin-top:5px;letter-spacing:-0.01em}
-.mt-buy-card-body{padding:16px;display:flex;flex-direction:column;gap:9px}
-.mt-buy-delivery{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--green);font-weight:500}
-.mt-buy-info{font-size:11px;color:var(--text3)}
+.mt-buy-card{border:1px solid var(--wire2);background:var(--ink);position:sticky;top:calc(var(--nav-h) + 1rem)}
+.mt-buy-card-hd{padding:1.5rem;border-bottom:1px solid var(--wire)}
+.mt-buy-label{font-family:var(--mono);font-size:9px;color:var(--phosphor);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:0.75rem}
+.mt-buy-price{font-family:var(--display);font-size:3.5rem;color:var(--chalk);letter-spacing:0.02em;line-height:1}
+.mt-buy-sub{display:flex;align-items:center;gap:10px;margin-top:6px}
+.mt-buy-mrp{font-family:var(--mono);font-size:11px;color:var(--ash);text-decoration:line-through}
+.mt-buy-disc{font-family:var(--mono);font-size:11px;color:var(--phosphor);letter-spacing:0.06em}
+.mt-buy-from{font-family:var(--mono);font-size:10px;color:var(--ash);margin-top:6px;letter-spacing:0.06em}
+.mt-buy-card-body{padding:1.5rem;display:flex;flex-direction:column;gap:10px}
+.mt-buy-del{font-family:var(--mono);font-size:10px;color:var(--phosphor);letter-spacing:0.08em}
 .mt-buy-now{
-  background:linear-gradient(135deg,var(--accent),var(--accent3));color:#fff;
-  border-radius:11px;padding:14px;font-size:14px;font-weight:700;width:100%;
-  transition:all 0.25s var(--ease);box-shadow:0 4px 24px var(--accent-glow);letter-spacing:-0.01em;
+  font-family:var(--mono);font-size:11px;letter-spacing:0.15em;text-transform:uppercase;
+  color:var(--void);background:var(--phosphor);
+  padding:16px;width:100%;text-align:center;border-radius:1px;
+  transition:all 0.25s var(--ease);box-shadow:0 0 30px var(--phosphor-dim);
 }
-.mt-buy-now:hover{box-shadow:0 8px 36px var(--accent-glow);transform:translateY(-1px)}
-.mt-buy-now:active{transform:translateY(0)}
+.mt-buy-now:hover{background:var(--chalk);box-shadow:0 0 50px rgba(184,255,87,0.25)}
 .mt-buy-cart{
-  background:transparent;color:var(--accent);border:1.5px solid rgba(79,148,248,0.35);
-  border-radius:11px;padding:12px;font-size:14px;font-weight:700;width:100%;transition:all 0.2s var(--ease);letter-spacing:-0.01em;
+  font-family:var(--mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--chalk);border:1px solid var(--wire2);
+  padding:14px;width:100%;text-align:center;border-radius:1px;
+  transition:all 0.2s;
 }
-.mt-buy-cart:hover{background:rgba(79,148,248,0.07);border-color:rgba(79,148,248,0.5)}
+.mt-buy-cart:hover{border-color:var(--wire3);background:var(--plate)}
 .mt-buy-compare{
-  background:rgba(167,139,250,0.08);color:var(--purple);border:1px solid rgba(167,139,250,0.18);
-  border-radius:11px;padding:10px;font-size:13px;font-weight:600;width:100%;transition:all 0.2s;
+  font-family:var(--mono);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--ash);border:1px solid var(--wire);
+  padding:12px;width:100%;text-align:center;border-radius:1px;
+  transition:all 0.2s;
 }
-.mt-buy-compare:hover{background:rgba(167,139,250,0.15)}
-
-/* Savings banner */
-.mt-savings{
-  background:linear-gradient(90deg,rgba(0,229,160,0.08),rgba(0,229,160,0.04));
-  border:1px solid rgba(0,229,160,0.14);border-radius:var(--r2);
-  padding:12px 16px;display:flex;align-items:center;gap:10px;margin-bottom:1rem;
-  animation:fadeUp 0.3s var(--ease) both;
+.mt-buy-compare:hover{border-color:var(--wire2);color:var(--chalk)}
+.mt-savings-bar{
+  background:rgba(184,255,87,0.06);border:1px solid rgba(184,255,87,0.15);
+  padding:12px 14px;font-family:var(--mono);font-size:10px;color:var(--phosphor);
+  letter-spacing:0.08em;margin:0 1.25rem;
 }
-.mt-savings strong{color:var(--green);font-weight:800}
 
 /* ── COMPARE PAGE ── */
-.mt-compare-page{max-width:1240px;margin:0 auto;padding:1.75rem 2rem;position:relative;z-index:1}
-.mt-compare-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
-.mt-page-title{font-size:22px;font-weight:900;letter-spacing:-0.04em}
-.mt-compare-cards{display:grid;gap:12px;margin-bottom:16px}
-.mt-compare-product-card{
-  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
-  padding:1rem;text-align:center;position:relative;
-  transition:border-color 0.2s;
+.mt-compare-shell{max-width:1400px;margin:0 auto;padding:3rem 2rem;position:relative;z-index:1}
+.mt-compare-hd{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:1px solid var(--wire)}
+.mt-page-title{font-family:var(--display);font-size:3rem;letter-spacing:0.02em;color:var(--chalk)}
+.mt-compare-cards{display:grid;gap:12px;margin-bottom:2rem}
+.mt-compare-pcard{
+  background:var(--ink);border:1px solid var(--wire);
+  padding:1.25rem;text-align:center;position:relative;
 }
-.mt-compare-product-card:hover{border-color:var(--border2)}
 .mt-compare-rm{
-  position:absolute;top:8px;right:8px;width:20px;height:20px;border-radius:50%;
-  background:var(--surface2);border:1px solid var(--border);font-size:10px;color:var(--text3);
+  position:absolute;top:8px;right:8px;
+  font-family:var(--mono);font-size:10px;color:var(--ash);
+  width:22px;height:22px;border:1px solid var(--wire);border-radius:1px;
   display:flex;align-items:center;justify-content:center;transition:all 0.2s;
 }
-.mt-compare-rm:hover{background:rgba(255,95,109,0.15);color:var(--red);border-color:rgba(255,95,109,0.3)}
-.mt-compare-table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:auto}
+.mt-compare-rm:hover{border-color:var(--signal);color:var(--signal)}
+.mt-compare-table-wrap{border:1px solid var(--wire);overflow:auto}
 .mt-compare-table{width:100%;border-collapse:collapse;min-width:500px}
-.mt-compare-table th{padding:12px 14px;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;background:var(--surface2);border-bottom:1px solid var(--border);text-align:left;font-family:var(--mono)}
-.mt-compare-table td{padding:12px 14px;font-size:13px;color:var(--text2);border-bottom:1px solid var(--border);vertical-align:top}
+.mt-compare-table th{padding:12px 14px;font-family:var(--mono);font-size:9px;font-weight:400;color:var(--ash);text-transform:uppercase;letter-spacing:0.12em;background:var(--plate);border-bottom:1px solid var(--wire);text-align:left}
+.mt-compare-table td{padding:12px 14px;font-size:12px;color:var(--ash);border-bottom:1px solid var(--wire);vertical-align:top}
 .mt-compare-table tr:last-child td{border-bottom:none}
-.mt-compare-table tr:hover td{background:rgba(255,255,255,0.012)}
-.mt-compare-table td.hl{color:var(--green);font-weight:700}
-.mt-attr-label{font-size:12px;font-weight:600;color:var(--text);width:160px;letter-spacing:-0.01em}
+.mt-compare-table tr:hover td{background:var(--smoke)}
+.mt-compare-table td.hl{color:var(--phosphor);font-family:var(--mono)}
+.mt-attr-label{font-family:var(--mono);font-size:10px;font-weight:400;color:var(--chalk);width:160px;letter-spacing:0.06em}
 
 /* ── CATEGORIES PAGE ── */
-.mt-cats-page{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
-.mt-cat-big{
-  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
-  padding:1.5rem;cursor:pointer;transition:all 0.3s var(--ease);display:flex;align-items:center;gap:14px;
+.mt-cats-shell{max-width:1400px;margin:0 auto;padding:3rem 2rem;position:relative;z-index:1}
+.mt-cats-page-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:0;border:1px solid var(--wire)}
+.mt-cat-full{
+  padding:2rem;border-right:1px solid var(--wire);border-bottom:1px solid var(--wire);
+  cursor:crosshair;transition:background 0.2s;
+  display:flex;align-items:center;gap:1.5rem;position:relative;
 }
-.mt-cat-big:hover{border-color:var(--border2);background:var(--surface2);transform:translateY(-4px);box-shadow:0 16px 48px rgba(0,0,0,0.4)}
-.mt-cat-big:active{transform:translateY(-2px)}
-.mt-cat-big-icon{font-size:32px;flex-shrink:0;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.5))}
-.mt-cat-big-name{font-size:14px;font-weight:700;color:var(--text);letter-spacing:-0.02em}
-.mt-cat-big-cnt{font-size:11px;color:var(--text3);margin-top:2px;font-family:var(--mono)}
+.mt-cat-full:hover{background:var(--plate)}
+.mt-cat-full-icon{font-size:28px;flex-shrink:0;filter:grayscale(0.2)}
+.mt-cat-full-name{font-size:13px;font-weight:400;color:var(--chalk);letter-spacing:-0.01em;margin-bottom:3px}
+.mt-cat-full-cnt{font-family:var(--mono);font-size:9px;color:var(--ash);letter-spacing:0.1em}
+.mt-cat-full-arrow{position:absolute;right:1.5rem;top:50%;transform:translateY(-50%);font-family:var(--mono);font-size:12px;color:var(--phosphor);opacity:0;transition:opacity 0.2s}
+.mt-cat-full:hover .mt-cat-full-arrow{opacity:1}
 
-/* ── CART PAGE ── */
-.mt-cart-layout{max-width:1100px;margin:0 auto;padding:1.75rem 2rem;display:flex;gap:1.5rem;position:relative;z-index:1}
+/* ── CART ── */
+.mt-cart-shell{max-width:1200px;margin:0 auto;padding:3rem 2rem;display:flex;gap:3rem;position:relative;z-index:1}
 .mt-cart-items{flex:1}
-.mt-cart-summary{width:280px;flex-shrink:0}
+.mt-cart-summary{width:300px;flex-shrink:0;position:sticky;top:calc(var(--nav-h)+1rem);align-self:start}
 .mt-cart-row{
-  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
-  padding:1.1rem;margin-bottom:10px;display:flex;gap:1rem;align-items:center;
-  transition:border-color 0.2s;animation:fadeUp 0.4s var(--ease) both;
+  display:grid;grid-template-columns:60px 1fr auto;gap:1.5rem;align-items:center;
+  padding:1.5rem 0;border-bottom:1px solid var(--wire);
+  animation:fadeIn 0.4s var(--ease) both;
 }
-.mt-cart-row:hover{border-color:var(--border2)}
-.mt-cart-img{width:64px;height:64px;background:radial-gradient(ellipse at center,var(--surface2),var(--surface));border:1px solid var(--border);border-radius:var(--r2);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0}
-.mt-cart-info{flex:1;min-width:0}
-.mt-cart-name{font-size:13px;font-weight:600;color:var(--text);letter-spacing:-0.01em}
-.mt-cart-site{font-size:11px;color:var(--text3);margin-top:2px;font-family:var(--mono)}
-.mt-cart-price{font-size:17px;font-weight:900;color:var(--text);font-family:var(--mono);letter-spacing:-0.03em}
-.mt-qty{display:flex;align-items:center;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r3);overflow:hidden;margin-top:6px;width:fit-content}
-.mt-qty-btn{width:30px;height:28px;display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--text2);transition:all 0.15s}
-.mt-qty-btn:hover{background:var(--surface3);color:var(--text)}
-.mt-qty-val{padding:0 8px;font-size:13px;font-weight:700;font-family:var(--mono);border-left:1px solid var(--border);border-right:1px solid var(--border);min-width:32px;text-align:center}
-.mt-cart-rm{font-size:11px;color:var(--red);cursor:pointer;margin-top:5px;transition:opacity 0.2s}
-.mt-cart-rm:hover{opacity:0.7}
-.mt-cart-summary-card{background:var(--glass);border:1px solid var(--border2);border-radius:var(--r);padding:1.2rem;backdrop-filter:blur(16px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.05)}
-.mt-cart-sum-title{font-size:15px;font-weight:800;margin-bottom:1rem;letter-spacing:-0.03em}
-.mt-cart-sum-row{display:flex;justify-content:space-between;font-size:13px;color:var(--text2);padding:6px 0}
-.mt-cart-sum-row.total{color:var(--text);font-weight:700;font-size:15px;border-top:1px solid var(--border);margin-top:8px;padding-top:14px}
+.mt-cart-img{
+  width:60px;height:60px;background:var(--plate);border:1px solid var(--wire);
+  border-radius:1px;display:flex;align-items:center;justify-content:center;font-size:24px;
+}
+.mt-cart-info{min-width:0}
+.mt-cart-name{font-size:13px;color:var(--chalk);font-weight:400;margin-bottom:4px;letter-spacing:-0.01em}
+.mt-cart-site{font-family:var(--mono);font-size:9px;color:var(--ash);letter-spacing:0.1em;text-transform:uppercase}
+.mt-cart-price{font-family:var(--display);font-size:1.8rem;color:var(--chalk);letter-spacing:0.02em}
+.mt-qty{display:flex;align-items:center;border:1px solid var(--wire);margin-top:8px;width:fit-content}
+.mt-qty-btn{width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:14px;color:var(--ash);transition:all 0.15s}
+.mt-qty-btn:hover{background:var(--plate);color:var(--chalk)}
+.mt-qty-val{padding:0 10px;font-family:var(--mono);font-size:11px;border-left:1px solid var(--wire);border-right:1px solid var(--wire);min-width:36px;text-align:center;height:28px;display:flex;align-items:center;justify-content:center}
+.mt-cart-rm{font-family:var(--mono);font-size:9px;color:var(--ash);cursor:crosshair;margin-top:6px;letter-spacing:0.1em;transition:color 0.2s;text-transform:uppercase}
+.mt-cart-rm:hover{color:var(--signal)}
+.mt-cart-summary-box{border:1px solid var(--wire2);background:var(--ink)}
+.mt-cart-sum-title{padding:1.25rem 1.5rem;border-bottom:1px solid var(--wire);font-family:var(--mono);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--chalk)}
+.mt-cart-sum-body{padding:1.25rem 1.5rem;display:flex;flex-direction:column;gap:8px}
+.mt-cart-sum-row{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--ash)}
+.mt-cart-sum-row span:last-child{color:var(--chalk)}
+.mt-cart-sum-row.green span:last-child{color:var(--phosphor)}
+.mt-cart-sum-row.total{color:var(--chalk);font-size:14px;padding-top:12px;border-top:1px solid var(--wire);margin-top:4px}
 .mt-checkout{
-  background:linear-gradient(135deg,var(--accent),var(--accent3));color:#fff;
-  border-radius:11px;padding:14px;font-size:14px;font-weight:700;width:100%;
-  text-align:center;margin-top:1rem;transition:all 0.25s var(--ease);
-  box-shadow:0 4px 24px var(--accent-glow);letter-spacing:-0.01em;
+  display:block;font-family:var(--mono);font-size:11px;letter-spacing:0.15em;text-transform:uppercase;
+  color:var(--void);background:var(--phosphor);
+  padding:16px;text-align:center;margin-top:1rem;border-radius:1px;
+  transition:all 0.25s;box-shadow:0 0 30px var(--phosphor-dim);
 }
-.mt-checkout:hover{box-shadow:0 8px 36px var(--accent-glow);transform:translateY(-1px)}
+.mt-checkout:hover{background:var(--chalk)}
 .mt-savings-note{
-  background:rgba(0,229,160,0.07);border:1px solid rgba(0,229,160,0.14);
-  border-radius:var(--r3);padding:8px 12px;font-size:12px;font-weight:600;
-  color:var(--green);text-align:center;margin-top:10px;
+  font-family:var(--mono);font-size:10px;color:var(--phosphor);
+  background:rgba(184,255,87,0.05);border:1px solid rgba(184,255,87,0.15);
+  padding:8px 12px;letter-spacing:0.06em;margin-top:10px;text-align:center;
 }
 
 /* ── EMPTY ── */
-.mt-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;padding:5rem 2rem;text-align:center}
-.mt-empty-icon{font-size:52px;filter:grayscale(0.4)}
-.mt-empty-title{font-size:20px;font-weight:800;letter-spacing:-0.04em}
-.mt-empty-sub{font-size:13px;color:var(--text3);max-width:280px;line-height:1.6}
+.mt-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.25rem;padding:6rem 2rem;text-align:center}
+.mt-empty-icon{font-size:40px;filter:grayscale(0.5)}
+.mt-empty-title{font-family:var(--display);font-size:2.5rem;letter-spacing:0.02em;color:var(--chalk)}
+.mt-empty-sub{font-family:var(--mono);font-size:11px;color:var(--ash);max-width:300px;line-height:1.8;letter-spacing:0.06em}
 .mt-empty-btn{
-  background:var(--accent);color:#fff;border-radius:10px;padding:11px 24px;
-  font-size:13px;font-weight:600;margin-top:0.25rem;transition:all 0.2s var(--ease);
+  font-family:var(--mono);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;
+  color:var(--void);background:var(--phosphor);padding:12px 24px;border-radius:1px;
+  margin-top:0.5rem;transition:all 0.2s;
 }
-.mt-empty-btn:hover{background:var(--accent2);box-shadow:0 4px 16px var(--accent-glow)}
+.mt-empty-btn:hover{background:var(--chalk)}
 
-/* ── ADD TO COMPARE BTN ── */
+/* ── ADD TO COMPARE ── */
 .mt-add-compare{
-  background:rgba(167,139,250,0.07);color:var(--purple);border:1px solid rgba(167,139,250,0.16);
-  border-radius:var(--r3);padding:7px 13px;font-size:12px;font-weight:600;transition:all 0.2s;letter-spacing:-0.01em;
+  font-family:var(--mono);font-size:9px;letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--ash);border:1px solid var(--wire2);padding:7px 13px;border-radius:1px;
+  transition:all 0.2s;
 }
-.mt-add-compare:hover{background:rgba(167,139,250,0.15)}
+.mt-add-compare:hover{border-color:var(--wire3);color:var(--chalk)}
 
 /* ── FOOTER ── */
 .mt-footer{
-  position:relative;z-index:1;background:var(--bg2);border-top:1px solid var(--border);
-  padding:2.75rem 2rem;margin-top:4rem;
+  position:relative;z-index:1;background:var(--ink);
+  border-top:1px solid var(--wire);padding:3rem 2rem;margin-top:6rem;
 }
-.mt-footer-inner{max-width:1240px;margin:0 auto;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:2rem}
-.mt-footer-brand-name{font-size:15px;font-weight:900;letter-spacing:-0.04em;
-  background:linear-gradient(90deg,var(--text),#90b8ff);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px}
-.mt-footer-desc{font-size:12px;color:var(--text3);max-width:220px;line-height:1.7}
-.mt-footer-col-title{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;font-family:var(--mono)}
-.mt-footer-link{font-size:12px;color:var(--text3);margin-bottom:8px;cursor:pointer;transition:color 0.2s;display:block;letter-spacing:-0.01em}
-.mt-footer-link:hover{color:var(--text2)}
-.mt-footer-bottom{max-width:1240px;margin:1.5rem auto 0;border-top:1px solid var(--border);padding-top:1.25rem;font-size:11px;color:var(--text3);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;font-family:var(--mono)}
+.mt-footer-inner{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:3rem;padding-bottom:2rem;border-bottom:1px solid var(--wire)}
+.mt-footer-brand{font-family:var(--display);font-size:2.5rem;letter-spacing:0.02em;color:var(--chalk);line-height:0.9}
+.mt-footer-brand em{font-style:normal;color:var(--phosphor)}
+.mt-footer-desc{font-size:11px;font-weight:300;color:var(--ash);line-height:1.8;margin-top:1rem;max-width:200px}
+.mt-footer-col-title{font-family:var(--mono);font-size:9px;color:var(--phosphor);letter-spacing:0.18em;text-transform:uppercase;margin-bottom:1rem}
+.mt-footer-link{font-family:var(--mono);font-size:10px;color:var(--ash);margin-bottom:8px;cursor:crosshair;transition:color 0.2s;display:block;letter-spacing:0.04em}
+.mt-footer-link:hover{color:var(--chalk)}
+.mt-footer-bottom{max-width:1400px;margin:1.5rem auto 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;font-family:var(--mono);font-size:9px;color:var(--ash);letter-spacing:0.1em;text-transform:uppercase}
 
-@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 
-/* Responsive */
-@media(max-width:768px){
-  .mt-nav{padding:0 1rem;gap:0.5rem}
-  .mt-nav-links .mt-nav-link span{display:none}
-  .mt-hero{padding:4rem 1.25rem 3rem}
-  .mt-section{padding:2rem 1.25rem}
-  .mt-search-layout{flex-direction:column;padding:1rem}
+@media(max-width:900px){
+  .mt-hero h1{font-size:clamp(4rem,18vw,8rem)}
+  .mt-hero-stats{position:static;transform:none;flex-direction:row;flex-wrap:wrap;justify-content:flex-start;gap:2rem;margin-top:2rem}
+  .mt-hero-sub{flex-direction:column;align-items:flex-start}
+  .mt-cats{grid-template-columns:repeat(2,1fr)}
+  .mt-howgrid{grid-template-columns:repeat(2,1fr)}
+  .mt-product-layout{grid-template-columns:1fr}
+  .mt-search-layout{flex-direction:column}
   .mt-sidebar{width:100%;position:static}
-  .mt-product-layout{flex-direction:column;padding:1rem}
-  .mt-product-right{width:100%;position:static}
-  .mt-cart-layout{flex-direction:column;padding:1rem}
-  .mt-cart-summary{width:100%}
-  .mt-hero-stats{gap:0;max-width:100%}
-  .mt-result-row{flex-wrap:wrap}
-  .mt-result-prices{min-width:auto;width:100%;align-items:flex-start}
+  .mt-cart-shell{flex-direction:column}
+  .mt-cart-summary{width:100%;position:static}
+  .mt-footer-inner{grid-template-columns:1fr 1fr}
+  .mt-prodrow{grid-template-columns:2rem 1fr auto}
+  .mt-result-row{grid-template-columns:50px 1fr}
+  .mt-result-prices{display:none}
+  .mt-section-hd{grid-template-columns:1fr}
+  .mt-section-title{text-align:left;font-size:3rem}
 }
 `;
 
-// ── HELPERS ───────────────────────────────────────────────────────────────────
-const Stars = ({r}:{r:number}) => (
-  <span style={{color:"#f59e0b",fontSize:12,letterSpacing:1}}>
-    {"★".repeat(Math.floor(r))}{r%1>=0.5?"½":""}{" "}
-  </span>
-);
-
-// Ripple hook
+// ─────────────────────────────────────────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────────────────────────────────────────
 function useRipple() {
   const ref = useRef<HTMLButtonElement>(null);
   const createRipple = (e: React.MouseEvent) => {
@@ -752,185 +803,218 @@ function useRipple() {
     const x = e.clientX - rect.left - size/2;
     const y = e.clientY - rect.top - size/2;
     const ripple = document.createElement("span");
-    Object.assign(ripple.style, {
-      position:"absolute",width:`${size}px`,height:`${size}px`,
-      left:`${x}px`,top:`${y}px`,borderRadius:"50%",
-      background:"rgba(255,255,255,0.15)",transform:"scale(0)",
-      animation:"ripple 0.5s linear",pointerEvents:"none",
-    });
-    if (!document.getElementById("ripple-kf")) {
-      const s = document.createElement("style"); s.id="ripple-kf";
-      s.textContent="@keyframes ripple{to{transform:scale(2.5);opacity:0}}";
-      document.head.appendChild(s);
-    }
-    el.style.position="relative"; el.style.overflow="hidden";
-    el.appendChild(ripple);
-    setTimeout(()=>ripple.remove(),500);
+    Object.assign(ripple.style,{position:"absolute",width:`${size}px`,height:`${size}px`,left:`${x}px`,top:`${y}px`,borderRadius:"50%",background:"rgba(184,255,87,0.15)",transform:"scale(0)",animation:"ripple 0.5s linear",pointerEvents:"none"});
+    if(!document.getElementById("ripple-kf")){const s=document.createElement("style");s.id="ripple-kf";s.textContent="@keyframes ripple{to{transform:scale(2.5);opacity:0}}";document.head.appendChild(s)}
+    el.style.position="relative";el.style.overflow="hidden";
+    el.appendChild(ripple);setTimeout(()=>ripple.remove(),500);
   };
-  return {ref, createRipple};
+  return {ref,createRipple};
 }
 
-// ── NAV ───────────────────────────────────────────────────────────────────────
-function Nav({page,setPage,cartCount,sq,setSq,onSearch}:{
-  page:Page;setPage:(p:Page)=>void;cartCount:number;
-  sq:string;setSq:(v:string)=>void;onSearch:()=>void
-}) {
-  return (
+// Custom cursor
+function Cursor() {
+  const cx = useRef<HTMLDivElement>(null);
+  const cy = useRef<HTMLDivElement>(null);
+  useEffect(()=>{
+    let mx=0,my=0,rx=0,ry=0;
+    const move=(e:MouseEvent)=>{mx=e.clientX;my=e.clientY;if(cx.current)Object.assign(cx.current.style,{left:mx+"px",top:my+"px"})};
+    const loop=()=>{rx+=(mx-rx)*0.1;ry+=(my-ry)*0.1;if(cy.current)Object.assign(cy.current.style,{left:rx+"px",top:ry+"px"});requestAnimationFrame(loop)};
+    window.addEventListener("mousemove",move);loop();
+    return()=>window.removeEventListener("mousemove",move);
+  },[]);
+  return(<><div className="mt-cursor" ref={cx}/><div className="mt-cursor-ring" ref={cy}/></>);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// NAV
+// ─────────────────────────────────────────────────────────────────────────────
+function Nav({page,setPage,cartCount,sq,setSq,onSearch}:{page:Page;setPage:(p:Page)=>void;cartCount:number;sq:string;setSq:(v:string)=>void;onSearch:()=>void}) {
+  return(
     <nav className="mt-nav">
-      <div className="mt-logo" onClick={()=>setPage("home")}>
-        <div className="mt-logo-mark">💊</div>
-        <div className="mt-logo-text">Med<span className="mt-logo-dot">Tracker</span></div>
+      <div className="mt-nav-logo" onClick={()=>setPage("home")}>
+        MED<span className="mt-nav-logo-dot">.</span>TRACKER
       </div>
       <div className="mt-nav-search">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" style={{color:"var(--text3)",flexShrink:0}}>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" style={{color:"var(--ash)",flexShrink:0}}>
           <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
         </svg>
-        <input placeholder="Search medicines, supplements…" value={sq} onChange={e=>setSq(e.target.value)} onKeyDown={e=>e.key==="Enter"&&onSearch()}/>
-        <button className="mt-nav-search-btn" onClick={onSearch}>Search</button>
+        <input placeholder="search medicines, supplements…" value={sq} onChange={e=>setSq(e.target.value)} onKeyDown={e=>e.key==="Enter"&&onSearch()}/>
+        <button className="mt-nav-search-btn" onClick={onSearch}>SEARCH</button>
       </div>
       <div className="mt-nav-links">
-        <div className={`mt-nav-link ${page==="categories"?"active":""}`} onClick={()=>setPage("categories")}><span>Categories</span></div>
-        <div className={`mt-nav-link ${page==="compare"?"active":""}`} onClick={()=>setPage("compare")}><span>Compare</span></div>
-        <div className={`mt-nav-link ${page==="cart"?"active":""}`} onClick={()=>setPage("cart")}>
-          🛒 <span>Cart</span>
-          {cartCount>0&&<span key={cartCount} className="mt-cart-badge">{cartCount}</span>}
-        </div>
+        {([["categories","CATEGORIES"],["compare","COMPARE"],["cart","CART"]] as const).map(([p,label])=>(
+          <div key={p} className={`mt-nav-link ${page===p?"active":""}`} onClick={()=>setPage(p)}>
+            {label}{p==="cart"&&cartCount>0&&<span key={cartCount} className="mt-cart-badge">{cartCount}</span>}
+          </div>
+        ))}
       </div>
     </nav>
   );
 }
 
-// ── HOME ──────────────────────────────────────────────────────────────────────
-function Home({setPage,setSq,setSelectedProduct,setCompareList}:{
-  setPage:(p:Page)=>void;setSq:(v:string)=>void;
-  setSelectedProduct:(p:Product)=>void;setCompareList:(fn:(prev:Product[])=>Product[])=>void
-}) {
+// ─────────────────────────────────────────────────────────────────────────────
+// HOME
+// ─────────────────────────────────────────────────────────────────────────────
+function Home({setPage,setSq,setSelectedProduct,setCompareList}:{setPage:(p:Page)=>void;setSq:(v:string)=>void;setSelectedProduct:(p:Product)=>void;setCompareList:(fn:(prev:Product[])=>Product[])=>void}) {
   const [heroQ,setHeroQ]=useState("");
   const doSearch=()=>{if(!heroQ.trim())return;setSq(heroQ);setPage("search")};
-  return (
+
+  return(
     <div>
-      {/* Hero */}
+      {/* HERO */}
       <div className="mt-hero">
-        <div className="mt-hero-eyebrow"><div className="mt-hero-eyebrow-dot"/>India's 1st Healthcare Utilitie's Price Tracker</div>
-        <h1>
-          <span className="line1">Never Overpay for</span>
-          <span className="line2">Your Health Again</span>
-        </h1>
-        <p>Compare prices across 1mg, PharmEasy, Netmeds, Apollo & more. Real-time. Instant. Free.</p>
-        <div className="mt-hero-search">
-          <input placeholder="Search whey protein, vitamin D3, omega-3, creatine…" value={heroQ} onChange={e=>setHeroQ(e.target.value)} onKeyDown={e=>e.key==="Enter"&&doSearch()} autoFocus/>
-          <button className="mt-hero-search-btn" onClick={doSearch}>Compare Now →</button>
+        <div className="mt-hero-bg"/>
+        <div className="mt-hero-grid"/>
+
+        <div className="mt-hero-eyebrow">
+          <div className="mt-hero-eyebrow-dot"/>
+          India's Health Price Intelligence System
         </div>
+
+        <h1>
+          NEVER<br/>
+          <em>OVERPAY</em><br/>
+          AGAIN
+        </h1>
+
+        <div className="mt-hero-sub">
+          <p className="mt-hero-desc">
+            Real-time price comparison across 1mg, PharmEasy, Netmeds, Apollo and more.
+            Find the best deal in seconds. Always free.
+          </p>
+          <div className="mt-hero-cta">
+            <div style={{display:"flex",gap:8,alignItems:"center",
+              background:"rgba(255,255,255,0.04)",border:"1px solid var(--wire2)",
+              padding:"8px 8px 8px 16px",borderRadius:2}}>
+              <input
+                style={{background:"none",border:"none",outline:"none",fontFamily:"var(--mono)",fontSize:12,
+                  color:"var(--chalk)",letterSpacing:"0.05em",width:280}}
+                placeholder="whey protein, vitamin D3, creatine…"
+                value={heroQ} onChange={e=>setHeroQ(e.target.value)}
+                onKeyDown={e=>e.key==="Enter"&&doSearch()}
+                autoFocus
+              />
+              <button className="mt-hero-btn" onClick={doSearch}>COMPARE →</button>
+            </div>
+            <div className="mt-hero-scroll">SCROLL TO EXPLORE</div>
+          </div>
+        </div>
+
+        {/* Stats sidebar */}
         <div className="mt-hero-stats">
-          {[["0","Products tracked"],["0","Stores compared"],["₹0","Saved this month"],["0","Price updates"]].map(([n,l])=>(
-            <div key={l} className="mt-stat"><div className="mt-stat-num">{n}</div><div className="mt-stat-label">{l}</div></div>
+          {[["0","Products"],["0","Stores"],["₹0","Saved"]].map(([n,l])=>(
+            <div key={l} className="mt-stat">
+              <div className="mt-stat-num">{n}</div>
+              <div className="mt-stat-label">{l}</div>
+            </div>
           ))}
         </div>
       </div>
 
-      {/* Trust bar */}
-      <div className="mt-trust">
-        {[["🔒","100% Genuine"],["⚡","Live Prices"],["🚚","Free Delivery Options"],["💯","Best Price Guarantee"],["📦","7+ Store Sources"]].map(([i,t])=>(
-          <div key={t} className="mt-trust-item"><span style={{fontSize:14}}>{i}</span><span>{t}</span></div>
-        ))}
+      {/* TICKER */}
+      <div className="mt-ticker">
+        <div className="mt-ticker-inner">
+          {[...Array(2)].map((_,rep)=>(
+            <span key={rep} style={{display:"inline-flex",gap:"4rem"}}>
+              {["1mg","PharmEasy","Netmeds","Apollo","HealthKart","Amazon","Flipkart"].map(s=>(
+                <span key={s+rep} className="mt-ticker-item">
+                  <span className="mt-ticker-sep">◆</span>{s}
+                </span>
+              ))}
+            </span>
+          ))}
+        </div>
       </div>
 
-      {/* Categories */}
-      <div className="mt-section">
+      {/* CATEGORIES */}
+      <div className="mt-section" style={{paddingBottom:"2rem"}}>
         <div className="mt-section-hd">
-          <div className="mt-section-title">Browse by <em>Category</em></div>
-          <div className="mt-section-link" onClick={()=>setPage("categories")}>View all →</div>
+          <div className="mt-section-label">Browse</div>
+          <div className="mt-section-title">CATE<em>GORIES</em></div>
         </div>
         <div className="mt-cats">
-          {CATEGORIES.map(c=>(
+          {CATEGORIES.map((c,i)=>(
             <div key={c.name} className="mt-cat" onClick={()=>{setSq(c.name);setPage("search")}}>
+              <div className="mt-cat-num">{String(i+1).padStart(2,"0")}</div>
               <div className="mt-cat-icon">{c.icon}</div>
               <div className="mt-cat-name">{c.name}</div>
-              <div className="mt-cat-count">{c.count} items</div>
+              <div className="mt-cat-arrow">→</div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Sites */}
-      <div className="mt-section" style={{paddingTop:0}}>
-        <div className="mt-sites-strip">
-          <div className="mt-sites-label">Comparing across</div>
-          {SITES.map(s=><div key={s} className="mt-site-pill">{s}</div>)}
-        </div>
+      {/* STORES */}
+      <div className="mt-sites">
+        <div className="mt-sites-label">Comparing across</div>
+        {SITES.map(s=><div key={s} className="mt-site-tag">{s}</div>)}
       </div>
 
-      {/* How It Works */}
-      <div className="mt-section" style={{paddingTop:0}}>
-        <div className="mt-section-hd"><div className="mt-section-title">How <em>It Works</em></div></div>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:14}}>
-          {[
-            {step:"01",icon:"🔍",title:"Search any product",desc:"Type a medicine name, supplement brand, or health category. Instant results."},
-            {step:"02",icon:"📊",title:"Compare live prices",desc:"We fetch real-time prices across 7+ stores and rank them from cheapest to highest."},
-            {step:"03",icon:"🛒",title:"Add to cart",desc:"Pick your preferred store, add to cart, and check out directly from the retailer."},
-            {step:"04",icon:"💰",title:"Save every time",desc:"Never pay more than needed. Our tracker finds deals you'd never find manually."},
-          ].map(({step,icon,title,desc})=>(
-            <div key={step} style={{background:"var(--surface)",border:"1px solid var(--border)",borderRadius:"var(--r)",padding:"1.5rem",position:"relative",overflow:"hidden",transition:"all 0.3s var(--ease)"}}>
-              <div style={{fontSize:10,fontFamily:"var(--mono)",fontWeight:700,color:"var(--text3)",letterSpacing:"0.1em",marginBottom:12}}>{step}</div>
-              <div style={{fontSize:28,marginBottom:12,lineHeight:1}}>{icon}</div>
-              <div style={{fontSize:14,fontWeight:700,color:"var(--text)",letterSpacing:"-0.03em",marginBottom:6}}>{title}</div>
-              <div style={{fontSize:12,color:"var(--text2)",lineHeight:1.7,letterSpacing:"-0.005em"}}>{desc}</div>
-              <div style={{position:"absolute",top:0,right:0,fontSize:80,fontFamily:"var(--mono)",fontWeight:900,color:"var(--border)",lineHeight:1,letterSpacing:"-0.04em",pointerEvents:"none",userSelect:"none"}}>{step}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Products */}
+      {/* PRODUCTS */}
       <div className="mt-section">
         <div className="mt-section-hd">
-          <div className="mt-section-title">🔥 <em>Best Deals</em> Right Now</div>
-          <div className="mt-section-link" onClick={()=>setPage("search")}>See all →</div>
+          <div className="mt-section-label">Best Deals</div>
+          <div className="mt-section-title">FEAT<em>URED</em></div>
         </div>
-        <div className="mt-grid">
+        <div className="mt-prodlist">
           {PRODUCTS.map((p,idx)=>{
             const best=p.prices[0];
             const d=disc(best.price,best.mrp);
-            const tagCls=p.tag==="Bestseller"?"best":p.tag==="New"?"new":"deal";
-            return (
-              <div key={p.id} className="mt-card" style={{animationDelay:`${idx*0.06}s`}}
+            return(
+              <div key={p.id} className="mt-prodrow" style={{animationDelay:`${idx*0.06}s`}}
                 onClick={()=>{setSelectedProduct(p);setPage("product")}}>
-                <div className="mt-card-img">
-                  {p.tag&&<div className={`mt-card-tag ${tagCls}`}>{p.tag}</div>}
-                  {p.image}
-                </div>
-                <div className="mt-card-body">
-                  <div className="mt-card-brand">{p.brand}</div>
-                  <div className="mt-card-name">{p.name}</div>
-                  <div className="mt-card-rating">
-                    <Stars r={p.rating}/>
-                    <span className="mt-card-rnum">{p.rating}</span>
-                    <span className="mt-card-rcnt">({p.reviews.toLocaleString()})</span>
+                <div className="mt-prodrow-idx">{String(idx+1).padStart(2,"0")}</div>
+                <div className="mt-prodrow-info">
+                  <div className="mt-prodrow-brand">{p.brand}</div>
+                  <div className="mt-prodrow-name">
+                    {p.name}
+                    {p.tag&&<span className="mt-prodrow-tag">{p.tag}</span>}
                   </div>
-                  <div className="mt-card-price-row">
-                    <div className="mt-card-price">₹{best.price.toLocaleString()}</div>
-                    <div className="mt-card-mrp">₹{best.mrp}</div>
-                    <div className="mt-card-disc">{d}% off</div>
-                  </div>
-                  <div className="mt-card-sites">{p.prices.length} stores compared</div>
-                  <button className="mt-card-cta" onClick={e=>{e.stopPropagation();setCompareList(prev=>prev.find(x=>x.id===p.id)?prev:[...prev.slice(0,2),p]);setPage("compare")}}>
-                    Compare Prices
-                  </button>
                 </div>
+                <div className="mt-prodrow-meta">
+                  <div className="mt-prodrow-price">₹{best.price.toLocaleString()}</div>
+                  <div className="mt-prodrow-disc">{d}% OFF MRP</div>
+                  <div className="mt-prodrow-stores">{p.prices.length} stores</div>
+                </div>
+                <button className="mt-prodrow-cta" onClick={e=>{e.stopPropagation();setSelectedProduct(p);setPage("product")}}>
+                  VIEW →
+                </button>
               </div>
             );
           })}
+        </div>
+      </div>
+
+      {/* HOW IT WORKS */}
+      <div className="mt-section" style={{paddingTop:"2rem"}}>
+        <div className="mt-section-hd" style={{marginBottom:"2rem"}}>
+          <div className="mt-section-label">Process</div>
+          <div className="mt-section-title">HOW IT<em> WORKS</em></div>
+        </div>
+        <div className="mt-howgrid">
+          {[
+            {n:"01",icon:"🔍",title:"Search any product",desc:"Type a medicine, brand, or supplement name. Results appear instantly."},
+            {n:"02",icon:"📊",title:"Compare live prices",desc:"We surface real-time prices across 7+ stores, ranked cheapest first."},
+            {n:"03",icon:"🛒",title:"Add to cart",desc:"Pick your store. Add to cart. Check out directly from the retailer."},
+            {n:"04",icon:"💰",title:"Save every time",desc:"The tracker finds deals you'd never find manually. Every. Single. Time."},
+          ].map(c=>(
+            <div key={c.n} className="mt-howcard">
+              <div className="mt-howcard-n">{c.n}</div>
+              <div className="mt-howcard-icon">{c.icon}</div>
+              <div className="mt-howcard-title">{c.title}</div>
+              <div className="mt-howcard-desc">{c.desc}</div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
   );
 }
 
-// ── SEARCH ────────────────────────────────────────────────────────────────────
-function Search({query,setPage,setSelectedProduct,addToCart,setCompareList}:{
-  query:string;setPage:(p:Page)=>void;setSelectedProduct:(p:Product)=>void;
-  addToCart:(p:Product,s:string)=>void;setCompareList:(fn:(prev:Product[])=>Product[])=>void
-}) {
+// ─────────────────────────────────────────────────────────────────────────────
+// SEARCH
+// ─────────────────────────────────────────────────────────────────────────────
+function Search({query,setPage,setSelectedProduct,addToCart,setCompareList}:{query:string;setPage:(p:Page)=>void;setSelectedProduct:(p:Product)=>void;addToCart:(p:Product,s:string)=>void;setCompareList:(fn:(prev:Product[])=>Product[])=>void}) {
   const [cats,setCats]=useState<string[]>([]);
   const [sites,setSites]=useState<string[]>([]);
   const [sort,setSort]=useState("price_asc");
@@ -952,179 +1036,214 @@ function Search({query,setPage,setSelectedProduct,addToCart,setCompareList}:{
     return b.reviews-a.reviews;
   });
 
-  return (
-    <div className="mt-search-layout">
-      <div className="mt-sidebar">
-        <div className="mt-filter-card">
-          <div className="mt-filter-title">Availability</div>
-          <div className="mt-filter-opt" onClick={()=>setStockOnly(!stockOnly)}>
-            <div className={`mt-filter-cb ${stockOnly?"on":""}`}/><span className="mt-filter-label">In Stock Only</span>
-          </div>
-        </div>
-        <div className="mt-filter-card">
-          <div className="mt-filter-title">Category</div>
-          {allCats.map(c=>(
-            <div key={c} className="mt-filter-opt" onClick={()=>toggle(cats,setCats,c)}>
-              <div className={`mt-filter-cb ${cats.includes(c)?"on":""}`}/>
-              <span className="mt-filter-label">{c}</span>
-              <span className="mt-filter-cnt">{PRODUCTS.filter(p=>p.category===c).length}</span>
-            </div>
-          ))}
-        </div>
-        <div className="mt-filter-card">
-          <div className="mt-filter-title">Store</div>
-          {SITES.map(s=>(
-            <div key={s} className="mt-filter-opt" onClick={()=>toggle(sites,setSites,s)}>
-              <div className={`mt-filter-cb ${sites.includes(s)?"on":""}`}/><span className="mt-filter-label">{s}</span>
-            </div>
-          ))}
-        </div>
-        {(cats.length>0||sites.length>0||stockOnly)&&(
-          <button style={{background:"rgba(240,82,82,0.1)",color:"var(--red)",border:"1px solid rgba(240,82,82,0.2)",borderRadius:"var(--r3)",padding:"8px 12px",fontSize:12,fontWeight:600,width:"100%"}}
-            onClick={()=>{setCats([]);setSites([]);setStockOnly(false)}}>Clear All</button>
-        )}
+  return(
+    <div className="mt-search-shell" style={{animation:"fadeUp 0.4s var(--ease) both"}}>
+      <div className="mt-search-topbar">
+        <div className="mt-search-title">{query?`"${query}"` : "ALL PRODUCTS"}</div>
+        <div className="mt-search-count">{filtered.length} RESULTS</div>
+        <select className="mt-sort-sel" value={sort} onChange={e=>setSort(e.target.value)}>
+          <option value="price_asc">PRICE: LOW → HIGH</option>
+          <option value="price_desc">PRICE: HIGH → LOW</option>
+          <option value="rating">BEST RATED</option>
+          <option value="popular">MOST POPULAR</option>
+        </select>
       </div>
-      <div className="mt-results-area">
-        <div className="mt-results-bar">
-          <div className="mt-results-count"><strong>{filtered.length}</strong> results {query&&<span>for "{query}"</span>}</div>
-          <select className="mt-sort" value={sort} onChange={e=>setSort(e.target.value)}>
-            <option value="price_asc">Price: Low to High</option>
-            <option value="price_desc">Price: High to Low</option>
-            <option value="rating">Best Rated</option>
-            <option value="popular">Most Popular</option>
-          </select>
-        </div>
-        {filtered.length===0?(<div className="mt-empty"><div className="mt-empty-icon">🔍</div><div className="mt-empty-title">No results</div><div className="mt-empty-sub">Try different filters or keywords.</div><button className="mt-empty-btn" onClick={()=>{setCats([]);setSites([])}}>Clear Filters</button></div>)
-        :filtered.map((p,i)=>{
-          const best=p.prices[0];const d=disc(best.price,best.mrp);
-          return (
-            <div key={p.id} className="mt-result-row" style={{animationDelay:`${i*0.05}s`}}
-              onClick={()=>{setSelectedProduct(p);setPage("product")}}>
-              <div className="mt-result-img">{p.image}</div>
-              <div className="mt-result-info">
-                <div className="mt-result-brand">{p.brand}</div>
-                <div className="mt-result-name">{p.name}</div>
-                <div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:4}}>
-                  <div className="mt-result-rating-chip">★ {p.rating}</div>
-                  <span className="mt-result-rcnt">{p.reviews.toLocaleString()} reviews</span>
-                </div>
-                <div className="mt-result-highlights">{p.highlights.slice(0,3).map(h=><span key={h} className="mt-result-hl">{h}</span>)}</div>
-              </div>
-              <div className="mt-result-prices" onClick={e=>e.stopPropagation()}>
-                <div>
-                  <div className="mt-result-from">Best price</div>
-                  <div className="mt-result-big">₹{best.price.toLocaleString()}</div>
-                  <div className="mt-result-sub"><span className="mt-result-mrp">₹{best.mrp}</span><span className="mt-result-disc">{d}% off</span></div>
-                </div>
-                <div className="mt-result-sitecnt">on {best.site} · {p.prices.length} stores</div>
-                <div className="mt-result-btns">
-                  <button className="mt-result-view" onClick={()=>{setSelectedProduct(p);setPage("product")}}>View All</button>
-                  <button className="mt-result-add" onClick={()=>addToCart(p,best.site)}>Add to Cart</button>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
 
-// ── PRODUCT ───────────────────────────────────────────────────────────────────
-function ProductPage({product,setPage,addToCart,setCompareList}:{
-  product:Product;setPage:(p:Page)=>void;
-  addToCart:(p:Product,s:string)=>void;setCompareList:(fn:(prev:Product[])=>Product[])=>void
-}) {
-  const {ref,createRipple}=useRipple();
-  const best=product.prices.filter(p=>p.inStock).sort((a,b)=>a.price-b.price)[0]||product.prices[0];
-  const maxP=product.prices[product.prices.length-1].price;
-  const savings=maxP-best.price;
-  return (
-    <div className="mt-product-layout" style={{animation:"fadeUp 0.4s ease both"}}>
-      <div className="mt-product-left">
-        <div className="mt-breadcrumb">
-          <span onClick={()=>setPage("home")}>Home</span><span className="mt-breadcrumb-sep">›</span>
-          <span onClick={()=>setPage("search")}>{product.category}</span><span className="mt-breadcrumb-sep">›</span>
-          <span style={{color:"var(--text)"}}>{product.brand}</span>
-        </div>
-        <div className="mt-product-img-wrap">{product.image}</div>
-        <div className="mt-product-detail-brand">{product.brand}</div>
-        <div className="mt-product-detail-name">{product.name}</div>
-        <div className="mt-product-detail-rtg">
-          <div className="mt-rtg-chip">★ {product.rating}</div>
-          <span className="mt-rtg-cnt">{product.reviews.toLocaleString()} reviews</span>
-        </div>
-        <div className="mt-product-desc">{product.description}</div>
-        <div style={{fontWeight:700,fontSize:13,marginBottom:8,color:"var(--text)",letterSpacing:"-0.01em"}}>Key Highlights</div>
-        <div className="mt-highlights-list">{product.highlights.map(h=><div key={h} className="mt-hl-item"><div className="mt-hl-dot"/>{h}</div>)}</div>
-
-        <div className="mt-price-table" style={{marginTop:"1.75rem"}}>
-          <div className="mt-price-table-hd">
-            <div>
-              <div className="mt-price-table-title">Price Comparison</div>
-              <div className="mt-price-table-sub">{product.prices.length} stores · Updated now</div>
+      <div className="mt-search-layout">
+        <div className="mt-sidebar">
+          <div className="mt-filter-group">
+            <div className="mt-filter-title">Availability</div>
+            <div className="mt-filter-opt" onClick={()=>setStockOnly(!stockOnly)}>
+              <div className={`mt-filter-cb ${stockOnly?"on":""}`}/>
+              <span className="mt-filter-label">In Stock Only</span>
             </div>
-            <button className="mt-add-compare" onClick={()=>{setCompareList(prev=>prev.find(x=>x.id===product.id)?prev:[...prev.slice(0,2),product]);setPage("compare")}}>
-              + Add to Compare
-            </button>
           </div>
-          {savings>0&&(
-            <div className="mt-savings" style={{margin:"0 16px 0"}}>
-              <span>💡</span><span>Save <strong>₹{savings.toLocaleString()}</strong> by choosing the best deal</span>
-            </div>
+          <div className="mt-filter-group">
+            <div className="mt-filter-title">Category</div>
+            {allCats.map(c=>(
+              <div key={c} className="mt-filter-opt" onClick={()=>toggle(cats,setCats,c)}>
+                <div className={`mt-filter-cb ${cats.includes(c)?"on":""}`}/>
+                <span className="mt-filter-label">{c}</span>
+                <span className="mt-filter-cnt">{PRODUCTS.filter(p=>p.category===c).length}</span>
+              </div>
+            ))}
+          </div>
+          <div className="mt-filter-group">
+            <div className="mt-filter-title">Store</div>
+            {SITES.map(s=>(
+              <div key={s} className="mt-filter-opt" onClick={()=>toggle(sites,setSites,s)}>
+                <div className={`mt-filter-cb ${sites.includes(s)?"on":""}`}/>
+                <span className="mt-filter-label">{s}</span>
+              </div>
+            ))}
+          </div>
+          {(cats.length>0||sites.length>0||stockOnly)&&(
+            <button style={{fontFamily:"var(--mono)",fontSize:9,letterSpacing:"0.12em",textTransform:"uppercase",color:"var(--signal)",border:"1px solid rgba(255,77,46,0.2)",padding:"8px 12px",width:"100%"}} onClick={()=>{setCats([]);setSites([]);setStockOnly(false)}}>CLEAR ALL</button>
           )}
-          {product.prices.sort((a,b)=>a.price-b.price).map((pr,i)=>{
-            const isBest=i===0&&pr.inStock;const d=disc(pr.price,pr.mrp);
-            return (
-              <div key={pr.site} className={`mt-price-row ${isBest?"best":""}`}>
-                <div className="mt-price-row-rank">#{i+1}</div>
-                <div className="mt-price-row-site">
-                  <div className="mt-price-row-site-name">
-                    {pr.site}{isBest&&<span className="mt-best-badge">Best Deal</span>}
+        </div>
+
+        <div className="mt-results-area">
+          {filtered.length===0?(
+            <div className="mt-empty">
+              <div className="mt-empty-icon">🔍</div>
+              <div className="mt-empty-title">NO RESULTS</div>
+              <div className="mt-empty-sub">Try different filters or keywords.</div>
+              <button className="mt-empty-btn" onClick={()=>{setCats([]);setSites([])}}>CLEAR FILTERS</button>
+            </div>
+          ):filtered.map((p,i)=>{
+            const best=p.prices[0];const d=disc(best.price,best.mrp);
+            return(
+              <div key={p.id} className="mt-result-row" style={{animationDelay:`${i*0.04}s`,animation:"fadeUp 0.4s var(--ease) both"}}
+                onClick={()=>{setSelectedProduct(p);setPage("product")}}>
+                <div className="mt-result-img">{p.image}</div>
+                <div className="mt-result-info">
+                  <div className="mt-result-brand">{p.brand}</div>
+                  <div className="mt-result-name">{p.name}</div>
+                  <div className="mt-result-rating-chip">★ {p.rating} · {p.reviews.toLocaleString()} reviews</div>
+                  <div className="mt-result-highlights">
+                    {p.highlights.slice(0,3).map(h=><span key={h} className="mt-result-hl">{h}</span>)}
                   </div>
-                  <div className={`mt-price-row-delivery ${pr.delivery==="3 days"||pr.delivery==="2 days"?"slow":""}`}>🚚 {pr.delivery}</div>
                 </div>
-                <div className="mt-price-row-price">
-                  {pr.inStock?<><div className="mt-price-big">₹{pr.price.toLocaleString()}</div><div className="mt-price-disc">{d}% off MRP</div></>
-                  :<div className="mt-price-oos">Out of Stock</div>}
+                <div className="mt-result-prices" onClick={e=>e.stopPropagation()}>
+                  <div className="mt-result-from">BEST PRICE</div>
+                  <div className="mt-result-big">₹{best.price.toLocaleString()}</div>
+                  <div className="mt-result-disc">↓ {d}% OFF · {best.site}</div>
+                  <div className="mt-result-btns" style={{marginTop:4}}>
+                    <button className="mt-result-view" onClick={()=>{setSelectedProduct(p);setPage("product")}}>VIEW</button>
+                    <button className="mt-result-add" onClick={()=>addToCart(p,best.site)}>ADD</button>
+                  </div>
                 </div>
-                {pr.inStock
-                  ?<button className="mt-buy-row-btn" onClick={()=>addToCart(product,pr.site)}>Add to Cart</button>
-                  :<button className="mt-notify-btn">Notify Me</button>}
               </div>
             );
           })}
         </div>
       </div>
+    </div>
+  );
+}
 
-      <div className="mt-product-right">
-        <div className="mt-buy-card">
-          <div className="mt-buy-card-hd">
-            <div className="mt-buy-card-best">✓ Best Price Available</div>
-            <div className="mt-buy-price">₹{best.price.toLocaleString()}</div>
-            <div className="mt-buy-sub"><span className="mt-buy-mrp">₹{best.mrp}</span><span className="mt-buy-disc">{disc(best.price,best.mrp)}% off</span></div>
-            <div className="mt-buy-site">on {best.site}</div>
+// ─────────────────────────────────────────────────────────────────────────────
+// PRODUCT
+// ─────────────────────────────────────────────────────────────────────────────
+function ProductPage({product,setPage,addToCart,setCompareList}:{product:Product;setPage:(p:Page)=>void;addToCart:(p:Product,s:string)=>void;setCompareList:(fn:(prev:Product[])=>Product[])=>void}) {
+  const {ref,createRipple}=useRipple();
+  const best=product.prices.filter(p=>p.inStock).sort((a,b)=>a.price-b.price)[0]||product.prices[0];
+  const maxP=product.prices[product.prices.length-1].price;
+  const savings=maxP-best.price;
+
+  return(
+    <div className="mt-product-shell" style={{animation:"fadeUp 0.4s var(--ease) both"}}>
+      <div className="mt-breadcrumb">
+        <span onClick={()=>setPage("home")}>HOME</span>
+        <span className="mt-breadcrumb-sep">/</span>
+        <span onClick={()=>setPage("search")}>{product.category.toUpperCase()}</span>
+        <span className="mt-breadcrumb-sep">/</span>
+        <span style={{color:"var(--chalk)"}}>{product.brand.toUpperCase()}</span>
+      </div>
+
+      <div className="mt-product-layout">
+        <div className="mt-product-left">
+          <div className="mt-product-hero">{product.image}</div>
+          <div className="mt-product-brand">{product.brand}</div>
+          <div className="mt-product-name">{product.name}</div>
+          <div className="mt-product-rtg">
+            <span className="mt-rtg-val">★ {product.rating}</span>
+            <span className="mt-rtg-cnt">{product.reviews.toLocaleString()} REVIEWS</span>
           </div>
-          <div className="mt-buy-card-body">
-            <div className="mt-buy-delivery">🚚 {best.delivery} delivery</div>
-            <div className="mt-buy-info">📦 Free delivery above ₹499</div>
-            <button ref={ref} className="mt-buy-now" onMouseDown={createRipple}>Buy Now on {best.site}</button>
-            <button className="mt-buy-cart" onClick={()=>addToCart(product,best.site)}>Add to Cart</button>
-            <button className="mt-buy-compare" onClick={()=>{setCompareList(prev=>prev.find(x=>x.id===product.id)?prev:[...prev.slice(0,2),product]);setPage("compare")}}>
-              ⚖ Add to Compare
-            </button>
+          <p className="mt-product-desc">{product.description}</p>
+
+          <div style={{fontFamily:"var(--mono)",fontSize:9,color:"var(--phosphor)",letterSpacing:"0.18em",textTransform:"uppercase",marginBottom:"1rem"}}>Key Highlights</div>
+          <div className="mt-hl-grid">
+            {product.highlights.map(h=>(
+              <div key={h} className="mt-hl-item">
+                <div className="mt-hl-marker"/>
+                {h}
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-price-table">
+            <div className="mt-price-table-hd">
+              <div className="mt-price-table-title">PRICE COMPARISON</div>
+              <div style={{display:"flex",alignItems:"center",gap:12}}>
+                <div className="mt-price-table-sub">{product.prices.length} STORES · LIVE</div>
+                <button className="mt-add-compare" onClick={()=>{setCompareList(prev=>prev.find(x=>x.id===product.id)?prev:[...prev.slice(0,2),product]);setPage("compare")}}>+ COMPARE</button>
+              </div>
+            </div>
+
+            {savings>0&&(
+              <div className="mt-savings-bar">
+                SAVE ₹{savings.toLocaleString()} BY CHOOSING THE BEST DEAL
+              </div>
+            )}
+
+            {[...product.prices].sort((a,b)=>a.price-b.price).map((pr,i)=>{
+              const isBest=i===0&&pr.inStock;const d=disc(pr.price,pr.mrp);
+              return(
+                <div key={pr.site} className={`mt-price-row ${isBest?"best":""}`}>
+                  <div className="mt-price-row-rank">#{i+1}</div>
+                  <div>
+                    <div className="mt-price-row-site">
+                      {pr.site}{isBest&&<span className="mt-best-badge">BEST</span>}
+                    </div>
+                    <div className={`mt-price-delivery ${pr.delivery==="Today"||pr.delivery==="Tomorrow"?"fast":""}`}>
+                      🚚 {pr.delivery}
+                    </div>
+                  </div>
+                  <div className="mt-price-delivery">{pr.delivery==="Today"?"EXPRESS":pr.delivery==="Tomorrow"?"NEXT DAY":"STANDARD"}</div>
+                  <div>
+                    {pr.inStock?(
+                      <>
+                        <div className="mt-price-big">₹{pr.price.toLocaleString()}</div>
+                        <div className="mt-price-disc-sm">{d}% OFF</div>
+                      </>
+                    ):<div className="mt-price-oos">OUT OF STOCK</div>}
+                  </div>
+                  {pr.inStock
+                    ?<button className="mt-buy-row-btn" onClick={()=>addToCart(product,pr.site)}>ADD</button>
+                    :<button className="mt-notify-btn">NOTIFY</button>}
+                </div>
+              );
+            })}
           </div>
         </div>
-        <div style={{marginTop:"1rem"}}>
-          <div style={{fontSize:13,fontWeight:700,marginBottom:10,color:"var(--text)"}}>Similar Products</div>
-          {PRODUCTS.filter(p=>p.id!==product.id&&p.category===product.category).slice(0,2).map(p=>(
-            <div key={p.id} style={{background:"var(--surface)",border:"1px solid var(--border)",borderRadius:"var(--r2)",padding:"10px",display:"flex",gap:10,alignItems:"center",cursor:"pointer",marginBottom:8,transition:"border-color 0.2s"}}
-              onClick={()=>{}}>
-              <div style={{fontSize:24,width:40,height:40,background:"var(--surface2)",borderRadius:8,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{p.image}</div>
-              <div style={{flex:1,minWidth:0}}>
-                <div style={{fontSize:12,fontWeight:600,color:"var(--text)",lineHeight:1.3}}>{p.name}</div>
-                <div style={{fontSize:13,fontWeight:800,color:"var(--accent)",fontFamily:"var(--mono)",marginTop:3}}>₹{p.prices[0].price.toLocaleString()}</div>
+
+        <div className="mt-product-right">
+          <div className="mt-buy-card">
+            <div className="mt-buy-card-hd">
+              <div className="mt-buy-label">BEST PRICE AVAILABLE</div>
+              <div className="mt-buy-price">₹{best.price.toLocaleString()}</div>
+              <div className="mt-buy-sub">
+                <span className="mt-buy-mrp">₹{best.mrp}</span>
+                <span className="mt-buy-disc">{disc(best.price,best.mrp)}% OFF</span>
               </div>
+              <div className="mt-buy-from">on {best.site}</div>
+            </div>
+            <div className="mt-buy-card-body">
+              <div className="mt-buy-del">🚚 {best.delivery} delivery</div>
+              <div style={{fontFamily:"var(--mono)",fontSize:10,color:"var(--ash)",letterSpacing:"0.06em"}}>Free delivery above ₹499</div>
+              <button ref={ref} className="mt-buy-now" onMouseDown={createRipple}>
+                BUY NOW · {best.site}
+              </button>
+              <button className="mt-buy-cart" onClick={()=>addToCart(product,best.site)}>ADD TO CART</button>
+              <button className="mt-buy-compare" onClick={()=>{setCompareList(prev=>prev.find(x=>x.id===product.id)?prev:[...prev.slice(0,2),product]);setPage("compare")}}>
+                ADD TO COMPARE
+              </button>
+            </div>
+          </div>
+
+          {PRODUCTS.filter(p=>p.id!==product.id&&p.category===product.category).slice(0,2).map(p=>(
+            <div key={p.id} style={{
+              display:"flex",alignItems:"center",gap:12,padding:"1rem 0",
+              borderBottom:"1px solid var(--wire)",cursor:"crosshair",
+              marginTop:0,transition:"background 0.2s",
+            }} onClick={()=>{}}>
+              <div style={{width:36,height:36,background:"var(--plate)",border:"1px solid var(--wire)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,flexShrink:0}}>{p.image}</div>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontFamily:"var(--mono)",fontSize:9,color:"var(--ash)",letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:2}}>{p.brand}</div>
+                <div style={{fontSize:11,color:"var(--chalk)",letterSpacing:"-0.01em",lineHeight:1.3}}>{p.name}</div>
+              </div>
+              <div style={{fontFamily:"var(--display)",fontSize:"1.2rem",color:"var(--phosphor)",letterSpacing:"0.02em",flexShrink:0}}>₹{p.prices[0].price.toLocaleString()}</div>
             </div>
           ))}
         </div>
@@ -1133,13 +1252,19 @@ function ProductPage({product,setPage,addToCart,setCompareList}:{
   );
 }
 
-// ── COMPARE ───────────────────────────────────────────────────────────────────
-function Compare({compareList,setCompareList,setPage,addToCart}:{
-  compareList:Product[];setCompareList:(fn:(prev:Product[])=>Product[])=>void;
-  setPage:(p:Page)=>void;addToCart:(p:Product,s:string)=>void
-}) {
-  if(compareList.length===0) return (
-    <div className="mt-compare-page"><div className="mt-empty"><div className="mt-empty-icon">⚖️</div><div className="mt-empty-title">Nothing to compare</div><div className="mt-empty-sub">Browse products and click "Compare Prices" to add them here.</div><button className="mt-empty-btn" onClick={()=>setPage("search")}>Browse Products</button></div></div>
+// ─────────────────────────────────────────────────────────────────────────────
+// COMPARE
+// ─────────────────────────────────────────────────────────────────────────────
+function Compare({compareList,setCompareList,setPage,addToCart}:{compareList:Product[];setCompareList:(fn:(prev:Product[])=>Product[])=>void;setPage:(p:Page)=>void;addToCart:(p:Product,s:string)=>void}) {
+  if(compareList.length===0) return(
+    <div className="mt-compare-shell">
+      <div className="mt-empty">
+        <div className="mt-empty-icon">⚖️</div>
+        <div className="mt-empty-title">NOTHING TO COMPARE</div>
+        <div className="mt-empty-sub">Browse products and click "Compare" to add them here.</div>
+        <button className="mt-empty-btn" onClick={()=>setPage("search")}>BROWSE PRODUCTS</button>
+      </div>
+    </div>
   );
   const attrs=["Brand","Category","Rating","Reviews","Best Price","MRP","Max Discount","Stores","Description"];
   const getVal=(p:Product,a:string)=>{
@@ -1157,33 +1282,34 @@ function Compare({compareList,setCompareList,setPage,addToCart}:{
     if(a==="Max Discount"){const max=Math.max(...compareList.map(p=>disc(p.prices[0].price,p.prices[0].mrp)));return val===`${max}%`}
     return false;
   };
-  return (
-    <div className="mt-compare-page" style={{animation:"fadeUp 0.4s ease both"}}>
-      <div className="mt-compare-header">
-        <div className="mt-page-title">⚖️ Compare Products</div>
-        <button style={{background:"var(--surface)",border:"1px solid var(--border)",borderRadius:"var(--r3)",padding:"7px 14px",fontSize:12,fontWeight:600,color:"var(--text2)"}} onClick={()=>setPage("search")}>+ Add More</button>
+
+  return(
+    <div className="mt-compare-shell" style={{animation:"fadeUp 0.4s var(--ease) both"}}>
+      <div className="mt-compare-hd">
+        <div className="mt-page-title">COMPARE</div>
+        <button style={{fontFamily:"var(--mono)",fontSize:9,letterSpacing:"0.12em",textTransform:"uppercase",color:"var(--phosphor)",border:"1px solid rgba(184,255,87,0.2)",padding:"8px 16px",borderRadius:1}} onClick={()=>setPage("search")}>+ ADD MORE</button>
       </div>
       <div className="mt-compare-cards" style={{gridTemplateColumns:`repeat(${compareList.length},1fr)`}}>
         {compareList.map(p=>(
-          <div key={p.id} className="mt-compare-product-card">
+          <div key={p.id} className="mt-compare-pcard">
             <button className="mt-compare-rm" onClick={()=>setCompareList(prev=>prev.filter(x=>x.id!==p.id))}>✕</button>
-            <div style={{fontSize:36,margin:"0 auto 8px"}}>{p.image}</div>
-            <div style={{fontSize:10,fontWeight:700,color:"var(--accent)",textTransform:"uppercase",letterSpacing:"0.08em",fontFamily:"var(--mono)"}}>{p.brand}</div>
-            <div style={{fontSize:12,fontWeight:600,color:"var(--text)",marginTop:4,lineHeight:1.3}}>{p.name}</div>
-            <button style={{background:"var(--accent)",color:"#fff",borderRadius:"var(--r3)",padding:"8px 12px",fontSize:11,fontWeight:700,marginTop:10,width:"100%"}} onClick={()=>addToCart(p,p.prices[0].site)}>
-              Add to Cart
-            </button>
+            <div style={{fontSize:32,margin:"0 auto 8px"}}>{p.image}</div>
+            <div style={{fontFamily:"var(--mono)",fontSize:9,color:"var(--phosphor)",letterSpacing:"0.12em",textTransform:"uppercase"}}>{p.brand}</div>
+            <div style={{fontSize:12,color:"var(--chalk)",marginTop:4,lineHeight:1.3}}>{p.name}</div>
+            <button style={{fontFamily:"var(--mono)",fontSize:9,letterSpacing:"0.12em",textTransform:"uppercase",color:"var(--void)",background:"var(--phosphor)",padding:"8px",width:"100%",marginTop:12,borderRadius:1}} onClick={()=>addToCart(p,p.prices[0].site)}>ADD TO CART</button>
           </div>
         ))}
       </div>
       <div className="mt-compare-table-wrap">
         <table className="mt-compare-table">
-          <thead><tr><th>Attribute</th>{compareList.map(p=><th key={p.id}>{p.brand}</th>)}</tr></thead>
+          <thead>
+            <tr><th>Attribute</th>{compareList.map(p=><th key={p.id}>{p.brand}</th>)}</tr>
+          </thead>
           <tbody>
             {attrs.map(a=>(
               <tr key={a}>
                 <td className="mt-attr-label">{a}</td>
-                {compareList.map(p=>{const v=getVal(p,a);return <td key={p.id} className={isHl(a,v)?"hl":""}>{a==="Description"?<span style={{fontSize:11,lineHeight:1.6}}>{v}</span>:v}</td>})}
+                {compareList.map(p=>{const v=getVal(p,a);return<td key={p.id} className={isHl(a,v)?"hl":""}>{a==="Description"?<span style={{fontSize:11,lineHeight:1.7,display:"block"}}>{v}</span>:v}</td>})}
               </tr>
             ))}
             <tr>
@@ -1191,8 +1317,8 @@ function Compare({compareList,setCompareList,setPage,addToCart}:{
               {compareList.map(p=>(
                 <td key={p.id}>
                   {p.prices.slice(0,3).map(pr=>(
-                    <div key={pr.site} style={{fontSize:11,color:"var(--text2)",marginBottom:3,fontFamily:"var(--mono)"}}>
-                      {pr.site}: <strong style={{color:"var(--text)"}}>₹{pr.price.toLocaleString()}</strong>
+                    <div key={pr.site} style={{fontFamily:"var(--mono)",fontSize:10,color:"var(--ash)",marginBottom:3,letterSpacing:"0.04em"}}>
+                      {pr.site}: <span style={{color:"var(--chalk)"}}>₹{pr.price.toLocaleString()}</span>
                     </div>
                   ))}
                 </td>
@@ -1205,16 +1331,24 @@ function Compare({compareList,setCompareList,setPage,addToCart}:{
   );
 }
 
-// ── CATEGORIES ────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// CATEGORIES
+// ─────────────────────────────────────────────────────────────────────────────
 function Categories({setPage,setSq}:{setPage:(p:Page)=>void;setSq:(v:string)=>void}) {
-  return (
-    <div className="mt-section" style={{animation:"fadeUp 0.4s ease both"}}>
-      <div className="mt-page-title" style={{marginBottom:"1.5rem"}}>All Categories</div>
-      <div className="mt-cats-page">
+  return(
+    <div className="mt-cats-shell" style={{animation:"fadeUp 0.4s var(--ease) both"}}>
+      <div style={{fontFamily:"var(--display)",fontSize:"3rem",letterSpacing:"0.02em",color:"var(--chalk)",paddingBottom:"1.5rem",borderBottom:"1px solid var(--wire)",marginBottom:"2.5rem"}}>
+        ALL CATEGORIES
+      </div>
+      <div className="mt-cats-page-grid">
         {CATEGORIES.map(c=>(
-          <div key={c.name} className="mt-cat-big" onClick={()=>{setSq(c.name);setPage("search")}}>
-            <div className="mt-cat-big-icon">{c.icon}</div>
-            <div><div className="mt-cat-big-name">{c.name}</div><div className="mt-cat-big-cnt">{c.count.toLocaleString()} products</div></div>
+          <div key={c.name} className="mt-cat-full" onClick={()=>{setSq(c.name);setPage("search")}}>
+            <div className="mt-cat-full-icon">{c.icon}</div>
+            <div>
+              <div className="mt-cat-full-name">{c.name}</div>
+              <div className="mt-cat-full-cnt">{c.count} products</div>
+            </div>
+            <div className="mt-cat-full-arrow">→</div>
           </div>
         ))}
       </div>
@@ -1222,56 +1356,72 @@ function Categories({setPage,setSq}:{setPage:(p:Page)=>void;setSq:(v:string)=>vo
   );
 }
 
-// ── CART ──────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// CART
+// ─────────────────────────────────────────────────────────────────────────────
 function Cart({cart,setCart,setPage}:{cart:CartItem[];setCart:(fn:(prev:CartItem[])=>CartItem[])=>void;setPage:(p:Page)=>void}) {
   const subtotal=cart.reduce((s,i)=>{const p=i.product.prices.find(p=>p.site===i.site)!;return s+p.price*i.qty},0);
   const mrpTotal=cart.reduce((s,i)=>{const p=i.product.prices.find(p=>p.site===i.site)!;return s+p.mrp*i.qty},0);
   const saved=mrpTotal-subtotal;const delivery=subtotal>499?0:49;
+
   if(cart.length===0) return(
-    <div style={{animation:"fadeUp 0.4s ease both"}}><div className="mt-empty"><div className="mt-empty-icon">🛒</div><div className="mt-empty-title">Your cart is empty</div><div className="mt-empty-sub">Compare prices and add products to get started.</div><button className="mt-empty-btn" onClick={()=>setPage("search")}>Browse Products</button></div></div>
+    <div className="mt-cart-shell">
+      <div className="mt-empty">
+        <div className="mt-empty-icon">🛒</div>
+        <div className="mt-empty-title">CART IS EMPTY</div>
+        <div className="mt-empty-sub">Compare prices and add products to get started.</div>
+        <button className="mt-empty-btn" onClick={()=>setPage("search")}>BROWSE PRODUCTS</button>
+      </div>
+    </div>
   );
-  return (
-    <div className="mt-cart-layout" style={{animation:"fadeUp 0.4s ease both"}}>
+
+  return(
+    <div className="mt-cart-shell" style={{animation:"fadeUp 0.4s var(--ease) both"}}>
       <div className="mt-cart-items">
-        <div className="mt-page-title" style={{marginBottom:"1.25rem"}}>My Cart ({cart.reduce((s,i)=>s+i.qty,0)} items)</div>
+        <div style={{fontFamily:"var(--display)",fontSize:"2.5rem",letterSpacing:"0.02em",color:"var(--chalk)",paddingBottom:"1.5rem",borderBottom:"1px solid var(--wire)",marginBottom:"0.5rem"}}>
+          CART ({cart.reduce((s,i)=>s+i.qty,0)})
+        </div>
         {cart.map((item,idx)=>{
           const priceObj=item.product.prices.find(p=>p.site===item.site)!;
-          return (
+          return(
             <div key={`${item.product.id}-${item.site}`} className="mt-cart-row" style={{animationDelay:`${idx*0.07}s`}}>
               <div className="mt-cart-img">{item.product.image}</div>
               <div className="mt-cart-info">
                 <div className="mt-cart-name">{item.product.name}</div>
                 <div className="mt-cart-site">{item.site} · {priceObj.delivery}</div>
-                <div style={{display:"flex",alignItems:"center",gap:10,marginTop:8}}>
-                  <div className="mt-qty">
-                    <button className="mt-qty-btn" onClick={()=>setCart(prev=>prev.map((c,i)=>i===idx?{...c,qty:Math.max(1,c.qty-1)}:c))}>−</button>
-                    <div className="mt-qty-val">{item.qty}</div>
-                    <button className="mt-qty-btn" onClick={()=>setCart(prev=>prev.map((c,i)=>i===idx?{...c,qty:c.qty+1}:c))}>+</button>
-                  </div>
-                  <div className="mt-cart-price">₹{(priceObj.price*item.qty).toLocaleString()}</div>
+                <div className="mt-qty">
+                  <button className="mt-qty-btn" onClick={()=>setCart(prev=>prev.map((c,i)=>i===idx?{...c,qty:Math.max(1,c.qty-1)}:c))}>−</button>
+                  <div className="mt-qty-val">{item.qty}</div>
+                  <button className="mt-qty-btn" onClick={()=>setCart(prev=>prev.map((c,i)=>i===idx?{...c,qty:c.qty+1}:c))}>+</button>
                 </div>
-                <div className="mt-cart-rm" onClick={()=>setCart(prev=>prev.filter((_,i)=>i!==idx))}>Remove</div>
+                <div className="mt-cart-rm" onClick={()=>setCart(prev=>prev.filter((_,i)=>i!==idx))}>REMOVE</div>
               </div>
+              <div className="mt-cart-price">₹{(priceObj.price*item.qty).toLocaleString()}</div>
             </div>
           );
         })}
       </div>
+
       <div className="mt-cart-summary">
-        <div className="mt-cart-summary-card">
-          <div className="mt-cart-sum-title">Order Summary</div>
-          <div className="mt-cart-sum-row"><span>MRP Total</span><span style={{fontFamily:"var(--mono)"}}>₹{mrpTotal.toLocaleString()}</span></div>
-          <div className="mt-cart-sum-row" style={{color:"var(--green)"}}><span>Discount</span><span style={{fontFamily:"var(--mono)"}}>−₹{saved.toLocaleString()}</span></div>
-          <div className="mt-cart-sum-row"><span>Delivery</span><span style={{fontFamily:"var(--mono)"}}>{delivery===0?<span style={{color:"var(--green)"}}>FREE</span>:`₹${delivery}`}</span></div>
-          <div className="mt-cart-sum-row total"><span>Total</span><span style={{fontFamily:"var(--mono)"}}>₹{(subtotal+delivery).toLocaleString()}</span></div>
-          {saved>0&&<div className="mt-savings-note">You save ₹{saved.toLocaleString()} on this order 🎉</div>}
-          <button className="mt-checkout">Proceed to Checkout</button>
+        <div className="mt-cart-summary-box">
+          <div className="mt-cart-sum-title">ORDER SUMMARY</div>
+          <div className="mt-cart-sum-body">
+            <div className="mt-cart-sum-row"><span>MRP TOTAL</span><span>₹{mrpTotal.toLocaleString()}</span></div>
+            <div className="mt-cart-sum-row green"><span>DISCOUNT</span><span>−₹{saved.toLocaleString()}</span></div>
+            <div className="mt-cart-sum-row"><span>DELIVERY</span><span>{delivery===0?"FREE":`₹${delivery}`}</span></div>
+            <div className="mt-cart-sum-row total"><span>TOTAL</span><span>₹{(subtotal+delivery).toLocaleString()}</span></div>
+            {saved>0&&<div className="mt-savings-note">YOU SAVE ₹{saved.toLocaleString()} ON THIS ORDER</div>}
+            <button className="mt-checkout">PROCEED TO CHECKOUT</button>
+          </div>
         </div>
       </div>
     </div>
   );
 }
 
-// ── ROOT ──────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// ROOT
+// ─────────────────────────────────────────────────────────────────────────────
 export default function MedTrackerApp() {
   const [page,setPage]=useState<Page>("home");
   const [sq,setSq]=useState("");
@@ -1283,7 +1433,7 @@ export default function MedTrackerApp() {
     setCart(prev=>{
       const idx=prev.findIndex(c=>c.product.id===p.id&&c.site===site);
       if(idx>=0)return prev.map((c,i)=>i===idx?{...c,qty:c.qty+1}:c);
-      return [...prev,{product:p,site,qty:1}];
+      return[...prev,{product:p,site,qty:1}];
     });
   },[]);
 
@@ -1291,15 +1441,14 @@ export default function MedTrackerApp() {
   const goTo=(p:Page)=>{setPage(p);window.scrollTo({top:0,behavior:"smooth"})};
   const onSearch=()=>{if(sq.trim())goTo("search")};
 
-  return (
+  return(
     <>
       <style>{CSS}</style>
+      <Cursor/>
       <div className="mt-noise"/>
-      <div className="mt-grid-bg"/>
-      {/* Ambient orbs */}
-      <div className="mt-orb" style={{width:700,height:700,background:"rgba(42,107,232,0.07)",top:-250,left:-200,animationDuration:"14s"}}/>
-      <div className="mt-orb" style={{width:500,height:500,background:"rgba(167,139,250,0.06)",top:400,right:-180,animationDuration:"10s",animationDirection:"alternate-reverse"}}/>
-      <div className="mt-orb" style={{width:450,height:450,background:"rgba(0,229,160,0.04)",bottom:80,left:"30%",animationDuration:"16s"}}/>
+      <div className="mt-scan"/>
+      <div className="mt-bracket tl"/><div className="mt-bracket tr"/>
+      <div className="mt-bracket bl"/><div className="mt-bracket br"/>
 
       <div style={{position:"relative",minHeight:"100vh",display:"flex",flexDirection:"column"}}>
         <Nav page={page} setPage={goTo} cartCount={cartCount} sq={sq} setSq={setSq} onSearch={onSearch}/>
@@ -1316,11 +1465,8 @@ export default function MedTrackerApp() {
         <footer className="mt-footer">
           <div className="mt-footer-inner">
             <div>
-              <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
-                <div className="mt-logo-mark" style={{width:26,height:26,fontSize:12}}>💊</div>
-                <div className="mt-footer-brand-name">MedTracker</div>
-              </div>
-              <div className="mt-footer-desc">India's most trusted healthcare price comparison platform. Real-time prices, zero bias.</div>
+              <div className="mt-footer-brand">MED<em>.</em><br/>TRACKER</div>
+              <p className="mt-footer-desc">India's health price intelligence system. Real-time. Zero bias. Always free.</p>
             </div>
             {[{title:"Compare",links:["Search Products","By Category","All Stores","Price Alerts"]},{title:"Company",links:["About Us","Blog","Careers","Contact"]},{title:"Legal",links:["Privacy Policy","Terms of Use","Cookie Policy"]}].map(col=>(
               <div key={col.title}>
@@ -1330,8 +1476,8 @@ export default function MedTrackerApp() {
             ))}
           </div>
           <div className="mt-footer-bottom">
-            <span>© 2025 MedTracker · Not affiliated with any pharmacy</span>
-            <span>Prices sourced in real-time and may vary</span>
+            <span>© 2025 MEDTRACKER · NOT AFFILIATED WITH ANY PHARMACY</span>
+            <span>PRICES SOURCED LIVE AND MAY VARY</span>
           </div>
         </footer>
       </div>
