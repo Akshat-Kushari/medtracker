@@ -1,7 +1,8 @@
 "use client";
 import { useState, useEffect, useRef, useCallback } from "react";
-import { PRODUCTS, CATEGORIES, SITES, disc } from "./data";
+import { PRODUCTS as STATIC_PRODUCTS, CATEGORIES, SITES, disc } from "./data";
 import type { Product } from "./data";
+import { fetchProducts, searchProducts } from "./api";
 
 interface CartItem { product: Product; site: string; qty: number }
 type Page = "home" | "search" | "product" | "compare" | "categories" | "cart" | "ai";
@@ -61,7 +62,7 @@ function getAIResponse(query: string): string {
   if (q.includes("hello") || q.includes("hi") || q.includes("hey") || q.includes("help")) return HEALTH_KB[1];
 
   // Try to find a matching product
-  const match = PRODUCTS.find(p =>
+  const match = STATIC_PRODUCTS.find(p =>
     p.name.toLowerCase().includes(q.split(" ")[0]) ||
     p.brand.toLowerCase().includes(q.split(" ")[0]) ||
     q.includes(p.name.toLowerCase().split(" ")[0])
@@ -515,11 +516,20 @@ function Home({ setPage, setSelectedProduct, setSearchQ }: {
   setSelectedProduct: (p: Product) => void;
   setSearchQ: (q: string) => void;
 }) {
+  const [products, setProducts] = useState<Product[]>(STATIC_PRODUCTS);
   const [counts, setCounts] = useState({ products: 0, stores: 0, saved: 0 });
   const statsRef = useRef<HTMLDivElement>(null);
   const animated = useRef(false);
 
+  // Load from real API on mount; keep static data until API responds
   useEffect(() => {
+    fetchProducts(undefined, 160, 0).then(data => {
+      if (data && data.length > 0) setProducts(data as Product[]);
+    });
+  }, []);
+
+  useEffect(() => {
+    const PRODUCTS = products;
     const totalSaved = PRODUCTS.reduce((acc, p) => {
       const prices = p.prices;
       if (!prices.length) return acc;
@@ -552,10 +562,10 @@ function Home({ setPage, setSelectedProduct, setSearchQ }: {
     }, { threshold: 0.3 });
     if (statsRef.current) observer.observe(statsRef.current);
     return () => observer.disconnect();
-  }, []);
+  }, [products]);
 
-  const featured = PRODUCTS.slice(0, 8);
-  const trending = PRODUCTS.filter(p => p.tag === "Bestseller" || p.tag === "Top Rated").slice(0, 8);
+  const featured = products.slice(0, 8);
+  const trending = products.filter(p => p.tag === "Bestseller" || p.tag === "Top Rated").slice(0, 8);
 
   return (
     <div>
@@ -748,9 +758,37 @@ function Search({ setPage, setSelectedProduct, initialQ }: {
 }) {
   const [q, setQ] = useState(initialQ);
   const [activeFilter, setActiveFilter] = useState("All");
+  const [apiResults, setApiResults] = useState<Product[] | null>(null);
+  const [searching, setSearching] = useState(false);
   const filters = ["All", ...CATEGORIES.map(c => c.name)];
 
-  const results = PRODUCTS.filter(p => {
+  // Search via API when query changes
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      if (!q && activeFilter === "All") {
+        // Load all products from API
+        setSearching(true);
+        const data = await fetchProducts(undefined, 160, 0);
+        setApiResults(data as Product[] | null);
+        setSearching(false);
+      } else if (q) {
+        setSearching(true);
+        const data = await searchProducts(q);
+        setApiResults(data as Product[] | null);
+        setSearching(false);
+      } else {
+        // Category filter only
+        setSearching(true);
+        const data = await fetchProducts(activeFilter, 40, 0);
+        setApiResults(data as Product[] | null);
+        setSearching(false);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [q, activeFilter]);
+
+  // Fallback to static data if API unavailable
+  const staticResults = STATIC_PRODUCTS.filter(p => {
     const matchQ = !q || p.name.toLowerCase().includes(q.toLowerCase()) ||
       p.brand.toLowerCase().includes(q.toLowerCase()) ||
       p.category.toLowerCase().includes(q.toLowerCase()) ||
@@ -758,6 +796,10 @@ function Search({ setPage, setSelectedProduct, initialQ }: {
     const matchF = activeFilter === "All" || p.category === activeFilter;
     return matchQ && matchF;
   });
+
+  const results = apiResults !== null
+    ? (activeFilter !== "All" && q ? apiResults.filter(p => p.category === activeFilter) : apiResults) as Product[]
+    : staticResults;
 
   return (
     <div className="search-page">
@@ -779,7 +821,7 @@ function Search({ setPage, setSelectedProduct, initialQ }: {
         ))}
       </div>
       <div className="results-header">
-        <span className="results-count">{results.length} products found</span>
+        <span className="results-count">{searching ? "Searching…" : `${results.length} products found`}</span>
       </div>
       {results.length === 0 ? (
         <div className="empty-state">
@@ -822,7 +864,7 @@ function Compare({ setPage, setSelectedProduct }: { setPage: (p: Page) => void; 
   const [searchSlot, setSearchSlot] = useState<number | null>(null);
   const [q, setQ] = useState("");
 
-  const searchRes = q ? PRODUCTS.filter(p =>
+  const searchRes = q ? STATIC_PRODUCTS.filter(p =>
     p.name.toLowerCase().includes(q.toLowerCase()) || p.brand.toLowerCase().includes(q.toLowerCase())
   ).slice(0, 6) : [];
 
@@ -1000,7 +1042,7 @@ function AiAdvisor() {
         "Hair & Skin": ["Vitamins & Minerals","Women's Health"],
       };
       const cats = new Set(goals.flatMap(g => goalMap[g] || []));
-      const filtered = PRODUCTS.filter(p => cats.has(p.category));
+      const filtered = STATIC_PRODUCTS.filter(p => cats.has(p.category));
       const sorted = filtered.sort((a, b) => b.rating - a.rating);
       setRecs(sorted.slice(0, 8));
       setLoading(false);
