@@ -374,16 +374,25 @@ function FloatingChatbot() {
 
   useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }) }, [messages, typing]);
 
-  const send = useCallback((text?: string) => {
+  const send = useCallback(async (text?: string) => {
     const q = (text || input).trim();
     if (!q) return;
     setInput("");
     setMessages(m => [...m, { role: "user", text: q }]);
     setTyping(true);
-    setTimeout(() => {
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: q }),
+      });
+      const data = await res.json();
+      setTyping(false);
+      setMessages(m => [...m, { role: "bot", text: data.reply || getAIResponse(q) }]);
+    } catch {
       setTyping(false);
       setMessages(m => [...m, { role: "bot", text: getAIResponse(q) }]);
-    }, 900 + Math.random() * 400);
+    }
   }, [input]);
 
   const onKey = (e: React.KeyboardEvent) => { if (e.key === "Enter") send() };
