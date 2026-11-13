@@ -1297,78 +1297,433 @@ function AiAdvisor() {
 
 // ── Main App ──
 // ── Account Page (generic placeholder) ──
-function AccountPage({ title, icon, desc, empty }: { title: string; icon: string; desc: string; empty: string }) {
+// ── Shared styles helper ──
+const pgWrap: React.CSSProperties = { maxWidth: 760, margin: "0 auto", padding: "100px 24px 80px" };
+const secLabel: React.CSSProperties = { fontSize: 11, fontWeight: 700, color: "var(--text3)", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 14 };
+const card: React.CSSProperties = { background: "var(--card)", border: "1px solid var(--border)", borderRadius: 8, padding: "20px 24px", marginBottom: 12 };
+const greenBtn: React.CSSProperties = { background: "#adff2f", color: "#0a0a0a", border: "none", borderRadius: 4, padding: "10px 24px", fontSize: 13, fontWeight: 700, cursor: "pointer", letterSpacing: "0.05em", textTransform: "uppercase" as const };
+const ghostBtn: React.CSSProperties = { background: "transparent", border: "1px solid var(--border)", color: "var(--text2)", borderRadius: 4, padding: "9px 20px", fontSize: 13, cursor: "pointer", fontFamily: "inherit" };
+
+// ── Toggle switch ──
+function Toggle({ on, onToggle }: { on: boolean; onToggle: () => void }) {
   return (
-    <div style={{ maxWidth: 700, margin: "0 auto", padding: "100px 24px 60px" }}>
-      <div style={{ marginBottom: 32 }}>
-        <div style={{ fontSize: 28, marginBottom: 8 }}>{icon}</div>
-        <h1 style={{ fontSize: 24, fontWeight: 700, color: "var(--text)", margin: "0 0 6px" }}>{title}</h1>
-        <p style={{ color: "var(--text3)", fontSize: 14, margin: 0 }}>{desc}</p>
-      </div>
+    <div onClick={onToggle} style={{
+      width: 40, height: 22, borderRadius: 11, background: on ? "#adff2f" : "var(--border)",
+      cursor: "pointer", position: "relative", transition: "background 0.2s", flexShrink: 0,
+    }}>
       <div style={{
-        border: "1px dashed var(--border)", borderRadius: 8,
-        padding: "48px 24px", textAlign: "center", color: "var(--text3)", fontSize: 14, lineHeight: 1.6,
-      }}>
-        {empty}
-      </div>
+        position: "absolute", top: 3, left: on ? 21 : 3, width: 16, height: 16,
+        borderRadius: "50%", background: on ? "#0a0a0a" : "var(--text3)", transition: "left 0.2s",
+      }} />
+    </div>
+  );
+}
+
+// ── Prescriptions Page ──
+interface PrescriptionMed {
+  name: string; generic: string; dosage: string; frequency: string;
+  duration: string; instructions: string; uses: string; howItWorks: string;
+  sideEffects: string[]; warnings: string; category: string;
+}
+interface PrescriptionResult {
+  doctor: string | null; patient: string | null; date: string | null;
+  diagnosis: string | null; medicines: PrescriptionMed[];
+  generalInstructions: string | null; followUp: string | null;
+  error?: string;
+}
+
+function PrescriptionsPage() {
+  const [dragging, setDragging] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<PrescriptionResult | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState<number | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  async function processFile(file: File) {
+    if (!file.type.startsWith("image/")) { alert("Please upload an image file (JPG, PNG, etc.)"); return; }
+    setLoading(true); setResult(null);
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const dataUrl = e.target?.result as string;
+      setPreview(dataUrl);
+      const base64 = dataUrl.split(",")[1];
+      const mimeType = file.type;
+      try {
+        const res = await fetch("/api/prescription", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ imageBase64: base64, mimeType }),
+        });
+        const data = await res.json();
+        setResult(data);
+      } catch { setResult({ error: "Failed to analyse prescription. Please try again.", medicines: [], doctor: null, patient: null, date: null, diagnosis: null, generalInstructions: null, followUp: null }); }
+      setLoading(false);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  const catColor: Record<string, string> = {
+    Antibiotic: "#ff9955", Antacid: "#55aaff", Painkiller: "#ff5555",
+    Vitamin: "#adff2f", Supplement: "#adff2f", Antifungal: "#cc88ff",
+    Antihistamine: "#ffcc44", default: "var(--text3)",
+  };
+
+  return (
+    <div style={pgWrap}>
+      <h1 style={{ fontSize: 24, fontWeight: 700, color: "var(--text)", margin: "0 0 4px" }}>AI Prescription Reader</h1>
+      <p style={{ color: "var(--text3)", fontSize: 14, margin: "0 0 32px", lineHeight: 1.6 }}>
+        Upload a photo of your handwritten or printed doctor prescription. Our AI will read it, explain each medicine, its uses, dosage, and side effects in simple language.
+      </p>
+
+      {/* Upload area */}
+      {!result && (
+        <div
+          onDragOver={e => { e.preventDefault(); setDragging(true); }}
+          onDragLeave={() => setDragging(false)}
+          onDrop={e => { e.preventDefault(); setDragging(false); const f = e.dataTransfer.files[0]; if (f) processFile(f); }}
+          onClick={() => fileRef.current?.click()}
+          style={{
+            border: `2px dashed ${dragging ? "#adff2f" : "var(--border)"}`,
+            borderRadius: 10, padding: "48px 24px", textAlign: "center",
+            cursor: "pointer", transition: "border 0.2s",
+            background: dragging ? "rgba(173,255,47,0.05)" : "transparent", marginBottom: 24,
+          }}
+        >
+          <div style={{ fontSize: 40, marginBottom: 12 }}>
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none" style={{ margin: "0 auto", display: "block" }}>
+              <rect x="8" y="6" width="32" height="36" rx="4" stroke="var(--border)" strokeWidth="2"/>
+              <line x1="16" y1="16" x2="32" y2="16" stroke="var(--border)" strokeWidth="2"/>
+              <line x1="16" y1="22" x2="28" y2="22" stroke="var(--border)" strokeWidth="2"/>
+              <line x1="16" y1="28" x2="24" y2="28" stroke="var(--border)" strokeWidth="2"/>
+            </svg>
+          </div>
+          <div style={{ color: "var(--text)", fontWeight: 600, marginBottom: 6 }}>Drop your prescription here</div>
+          <div style={{ color: "var(--text3)", fontSize: 13 }}>or click to browse — JPG, PNG, HEIC supported</div>
+          <input ref={fileRef} type="file" accept="image/*" style={{ display: "none" }} onChange={e => { const f = e.target.files?.[0]; if (f) processFile(f); }} />
+        </div>
+      )}
+
+      {/* Loading */}
+      {loading && (
+        <div style={{ textAlign: "center", padding: "60px 0" }}>
+          {preview && <img src={preview} alt="prescription" style={{ maxWidth: 300, maxHeight: 200, borderRadius: 8, border: "1px solid var(--border)", marginBottom: 24, objectFit: "contain" }} />}
+          <div style={{ color: "#adff2f", fontSize: 14, marginBottom: 8, fontWeight: 600 }}>AI is reading your prescription…</div>
+          <div style={{ color: "var(--text3)", fontSize: 13 }}>Extracting medicines and looking up details</div>
+          <div style={{ display: "flex", justifyContent: "center", gap: 6, marginTop: 20 }}>
+            {[0,1,2].map(i => <div key={i} style={{ width: 8, height: 8, borderRadius: "50%", background: "#adff2f", animation: `pulse 1.2s ${i*0.4}s infinite`, opacity: 0.7 }} />)}
+          </div>
+        </div>
+      )}
+
+      {/* Error */}
+      {result?.error && (
+        <div style={{ background: "rgba(255,85,85,0.08)", border: "1px solid #ff5555", borderRadius: 8, padding: 20, marginBottom: 24 }}>
+          <div style={{ color: "#ff5555", fontWeight: 600, marginBottom: 8 }}>Could not read prescription</div>
+          <div style={{ color: "var(--text2)", fontSize: 14 }}>{result.error}</div>
+          <button onClick={() => { setResult(null); setPreview(null); }} style={{ ...greenBtn, marginTop: 16 }}>Try Again</button>
+        </div>
+      )}
+
+      {/* Result */}
+      {result && !result.error && (
+        <div>
+          {/* Header info */}
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 24 }}>
+            {preview && <img src={preview} alt="prescription" style={{ width: 120, height: 90, objectFit: "cover", borderRadius: 6, border: "1px solid var(--border)", flexShrink: 0 }} />}
+            <div style={{ flex: 1, minWidth: 200 }}>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 10 }}>
+                {result.doctor && <span style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 20, padding: "4px 12px", fontSize: 12, color: "var(--text2)" }}>Dr. {result.doctor}</span>}
+                {result.date && <span style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 20, padding: "4px 12px", fontSize: 12, color: "var(--text2)" }}>{result.date}</span>}
+                {result.diagnosis && <span style={{ background: "rgba(173,255,47,0.1)", border: "1px solid #adff2f", borderRadius: 20, padding: "4px 12px", fontSize: 12, color: "#adff2f" }}>{result.diagnosis}</span>}
+              </div>
+              {result.generalInstructions && <div style={{ fontSize: 13, color: "var(--text2)", lineHeight: 1.5 }}>{result.generalInstructions}</div>}
+            </div>
+          </div>
+
+          <div style={secLabel}>{result.medicines.length} Medicines Found</div>
+
+          {result.medicines.map((med, i) => (
+            <div key={i} style={{ ...card, cursor: "pointer" }} onClick={() => setExpanded(expanded === i ? null : i)}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12 }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4, flexWrap: "wrap" }}>
+                    <span style={{ fontSize: 16, fontWeight: 700, color: "var(--text)" }}>{med.name}</span>
+                    {med.category && <span style={{ fontSize: 11, padding: "2px 8px", borderRadius: 10, background: "var(--bg)", border: "1px solid var(--border)", color: catColor[med.category] ?? catColor.default }}>{med.category}</span>}
+                  </div>
+                  {med.generic && <div style={{ fontSize: 12, color: "var(--text3)", marginBottom: 8 }}>{med.generic}</div>}
+                  <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+                    {med.dosage && <span style={{ fontSize: 13, color: "#adff2f", fontWeight: 600 }}>{med.dosage}</span>}
+                    {med.frequency && <span style={{ fontSize: 13, color: "var(--text2)" }}>{med.frequency}</span>}
+                    {med.duration && <span style={{ fontSize: 13, color: "var(--text2)" }}>for {med.duration}</span>}
+                  </div>
+                </div>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="var(--text3)" style={{ transition: "transform 0.2s", transform: expanded === i ? "rotate(180deg)" : "rotate(0deg)", flexShrink: 0, marginTop: 4 }}>
+                  <path d="M8 10L3 5h10z"/>
+                </svg>
+              </div>
+
+              {expanded === i && (
+                <div style={{ marginTop: 20, borderTop: "1px solid var(--border)", paddingTop: 20, display: "flex", flexDirection: "column", gap: 16 }}>
+                  {med.instructions && (
+                    <div style={{ background: "rgba(173,255,47,0.06)", border: "1px solid rgba(173,255,47,0.2)", borderRadius: 6, padding: "10px 14px", fontSize: 13, color: "#adff2f" }}>
+                      {med.instructions}
+                    </div>
+                  )}
+                  <div>
+                    <div style={{ ...secLabel, marginBottom: 6 }}>What it treats</div>
+                    <div style={{ fontSize: 14, color: "var(--text2)", lineHeight: 1.6 }}>{med.uses}</div>
+                  </div>
+                  {med.howItWorks && (
+                    <div>
+                      <div style={{ ...secLabel, marginBottom: 6 }}>How it works</div>
+                      <div style={{ fontSize: 14, color: "var(--text2)", lineHeight: 1.6 }}>{med.howItWorks}</div>
+                    </div>
+                  )}
+                  {med.sideEffects?.length > 0 && (
+                    <div>
+                      <div style={{ ...secLabel, marginBottom: 8 }}>Common Side Effects</div>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                        {med.sideEffects.map((s, j) => (
+                          <span key={j} style={{ fontSize: 12, padding: "4px 10px", borderRadius: 20, background: "rgba(255,153,85,0.1)", border: "1px solid rgba(255,153,85,0.3)", color: "#ff9955" }}>{s}</span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {med.warnings && (
+                    <div style={{ background: "rgba(255,85,85,0.06)", border: "1px solid rgba(255,85,85,0.2)", borderRadius: 6, padding: "10px 14px" }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: "#ff5555", letterSpacing: "0.08em", marginBottom: 4 }}>WARNING</div>
+                      <div style={{ fontSize: 13, color: "var(--text2)", lineHeight: 1.5 }}>{med.warnings}</div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          ))}
+
+          {result.followUp && (
+            <div style={{ marginTop: 16, fontSize: 13, color: "var(--text2)", borderTop: "1px solid var(--border)", paddingTop: 16 }}>
+              Follow-up: <span style={{ color: "#adff2f", fontWeight: 600 }}>{result.followUp}</span>
+            </div>
+          )}
+
+          <div style={{ marginTop: 24, padding: 16, background: "rgba(255,153,85,0.06)", border: "1px solid rgba(255,153,85,0.2)", borderRadius: 8, fontSize: 12, color: "var(--text3)", lineHeight: 1.6 }}>
+            This AI analysis is for informational purposes only. Always follow your doctor's instructions. Do not change your medication without consulting a healthcare professional.
+          </div>
+
+          <button onClick={() => { setResult(null); setPreview(null); }} style={{ ...ghostBtn, marginTop: 20 }}>Upload Another</button>
+        </div>
+      )}
     </div>
   );
 }
 
 // ── Preferences Page ──
 function PreferencesPage() {
-  const categories = ["Vitamins & Minerals", "Protein & Fitness", "Ayurveda", "Women's Health", "Heart Health", "Diabetes", "Immunity", "Sleep & Stress", "Weight Management", "Hair & Skin"];
-  const [selected, setSelected] = useState<string[]>([]);
+  const supabase = createClient();
+  const [user, setUser] = useState<User | null>(null);
+  const HEALTH_CATS = ["Vitamins & Minerals", "Protein & Fitness", "Ayurveda & Herbs", "Women's Health", "Heart Health", "Diabetes & Blood Sugar", "Immunity", "Sleep & Stress", "Weight Management", "Hair & Skin", "Joint & Bone", "Digestive Health", "Eye Health", "Men's Health"];
+  const DIET_OPTS = ["Vegetarian", "Vegan", "Non-Vegetarian", "Jain", "Keto", "Diabetic-friendly"];
+  const GOALS = ["Lose weight", "Build muscle", "Improve energy", "Better sleep", "Manage chronic condition", "General wellness", "Sports performance", "Reduce stress"];
+
+  const [interests, setInterests] = useState<string[]>([]);
   const [diet, setDiet] = useState("");
+  const [goals, setGoals] = useState<string[]>([]);
+  const [age, setAge] = useState("");
+  const [gender, setGender] = useState("");
+  const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  function toggle(c: string) {
-    setSelected(s => s.includes(c) ? s.filter(x => x !== c) : [...s, c]);
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      const u = data.user; setUser(u);
+      const meta = u?.user_metadata ?? {};
+      setInterests(meta.health_interests ?? []);
+      setDiet(meta.diet_type ?? "");
+      setGoals(meta.health_goals ?? []);
+      setAge(meta.age ?? "");
+      setGender(meta.gender ?? "");
+    });
+  }, []);
+
+  function toggleArr(arr: string[], val: string, setter: (a: string[]) => void) {
+    setter(arr.includes(val) ? arr.filter(x => x !== val) : [...arr, val]);
     setSaved(false);
   }
 
+  async function handleSave() {
+    if (!user) return;
+    setSaving(true);
+    await supabase.auth.updateUser({ data: { health_interests: interests, diet_type: diet, health_goals: goals, age, gender } });
+    setSaving(false); setSaved(true);
+    setTimeout(() => setSaved(false), 2500);
+  }
+
+  const chipStyle = (active: boolean): React.CSSProperties => ({
+    padding: "7px 14px", borderRadius: 20, fontSize: 13, cursor: "pointer",
+    border: active ? "1px solid #adff2f" : "1px solid var(--border)",
+    background: active ? "rgba(173,255,47,0.1)" : "transparent",
+    color: active ? "#adff2f" : "var(--text2)", fontFamily: "inherit", transition: "all 0.15s",
+  });
+
+  const inputS: React.CSSProperties = { background: "var(--card)", border: "1px solid var(--border)", borderRadius: 4, padding: "9px 14px", fontSize: 14, color: "var(--text)", outline: "none", fontFamily: "inherit" };
+
   return (
-    <div style={{ maxWidth: 700, margin: "0 auto", padding: "100px 24px 60px" }}>
-      <h1 style={{ fontSize: 24, fontWeight: 700, color: "var(--text)", margin: "0 0 6px" }}>Health Preferences</h1>
-      <p style={{ color: "var(--text3)", fontSize: 14, margin: "0 0 32px" }}>Personalise your experience — we show you relevant products and AI advice based on these.</p>
+    <div style={pgWrap}>
+      <h1 style={{ fontSize: 24, fontWeight: 700, color: "var(--text)", margin: "0 0 4px" }}>Health Preferences</h1>
+      <p style={{ color: "var(--text3)", fontSize: 14, margin: "0 0 32px" }}>Personalise product recommendations and AI advice based on your health profile.</p>
 
-      <div style={{ marginBottom: 28 }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text2)", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 14 }}>Health Interests</div>
+      {/* Basic info */}
+      <section style={{ marginBottom: 32 }}>
+        <div style={secLabel}>Basic Info</div>
+        <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            <label style={{ fontSize: 11, color: "var(--text3)", textTransform: "uppercase", letterSpacing: "0.08em" }}>Age</label>
+            <input value={age} onChange={e => { setAge(e.target.value); setSaved(false); }} placeholder="e.g. 28" style={{ ...inputS, width: 100 }}
+              onFocus={e => e.target.style.borderColor = "#adff2f"} onBlur={e => e.target.style.borderColor = "var(--border)"} />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            <label style={{ fontSize: 11, color: "var(--text3)", textTransform: "uppercase", letterSpacing: "0.08em" }}>Gender</label>
+            <div style={{ display: "flex", gap: 6 }}>
+              {["Male", "Female", "Other"].map(g => <button key={g} onClick={() => { setGender(g); setSaved(false); }} style={chipStyle(gender === g)}>{g}</button>)}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Diet */}
+      <section style={{ marginBottom: 32 }}>
+        <div style={secLabel}>Diet Type</div>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-          {categories.map(c => (
-            <button key={c} onClick={() => toggle(c)} style={{
-              padding: "7px 14px", borderRadius: 20, fontSize: 13, cursor: "pointer",
-              border: selected.includes(c) ? "1px solid #adff2f" : "1px solid var(--border)",
-              background: selected.includes(c) ? "rgba(173,255,47,0.12)" : "transparent",
-              color: selected.includes(c) ? "#adff2f" : "var(--text2)",
-              fontFamily: "inherit", transition: "all 0.15s",
-            }}>{c}</button>
-          ))}
+          {DIET_OPTS.map(d => <button key={d} onClick={() => { setDiet(diet === d ? "" : d); setSaved(false); }} style={chipStyle(diet === d)}>{d}</button>)}
         </div>
-      </div>
+      </section>
 
-      <div style={{ marginBottom: 32 }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text2)", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 10 }}>Diet Type</div>
-        <div style={{ display: "flex", gap: 8 }}>
-          {["Vegetarian", "Vegan", "Non-Vegetarian", "Jain"].map(d => (
-            <button key={d} onClick={() => { setDiet(d); setSaved(false); }} style={{
-              padding: "7px 16px", borderRadius: 20, fontSize: 13, cursor: "pointer",
-              border: diet === d ? "1px solid #adff2f" : "1px solid var(--border)",
-              background: diet === d ? "rgba(173,255,47,0.12)" : "transparent",
-              color: diet === d ? "#adff2f" : "var(--text2)",
-              fontFamily: "inherit", transition: "all 0.15s",
-            }}>{d}</button>
-          ))}
+      {/* Goals */}
+      <section style={{ marginBottom: 32 }}>
+        <div style={secLabel}>Health Goals <span style={{ fontWeight: 400, textTransform: "none", letterSpacing: 0, color: "var(--text3)" }}>(pick all that apply)</span></div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+          {GOALS.map(g => <button key={g} onClick={() => toggleArr(goals, g, setGoals)} style={chipStyle(goals.includes(g))}>{g}</button>)}
         </div>
-      </div>
+      </section>
 
-      <button onClick={() => setSaved(true)} style={{
-        background: "#adff2f", color: "#0a0a0a", border: "none", borderRadius: 4,
-        padding: "11px 28px", fontSize: 13, fontWeight: 700, cursor: "pointer",
-        letterSpacing: "0.05em", textTransform: "uppercase",
-      }}>
-        {saved ? "Saved" : "Save Preferences"}
+      {/* Health interests */}
+      <section style={{ marginBottom: 36 }}>
+        <div style={secLabel}>Health Interests <span style={{ fontWeight: 400, textTransform: "none", letterSpacing: 0, color: "var(--text3)" }}>(pick all that apply)</span></div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+          {HEALTH_CATS.map(c => <button key={c} onClick={() => toggleArr(interests, c, setInterests)} style={chipStyle(interests.includes(c))}>{c}</button>)}
+        </div>
+      </section>
+
+      <button onClick={handleSave} disabled={saving} style={{ ...greenBtn, opacity: saving ? 0.7 : 1 }}>
+        {saving ? "Saving…" : saved ? "Saved" : "Save Preferences"}
       </button>
+      {saved && <span style={{ marginLeft: 12, fontSize: 13, color: "#adff2f" }}>Your preferences have been saved</span>}
+    </div>
+  );
+}
+
+// ── Saved Products Page ──
+function SavedProductsPage({ setPage, setSelectedProduct }: { setPage: (p: Page) => void; setSelectedProduct: (p: Product) => void }) {
+  const supabase = createClient();
+  const [saved, setSaved] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Load from localStorage (Supabase wishlist can be wired later)
+    try {
+      const stored = localStorage.getItem("medtracker-saved");
+      if (stored) setSaved(JSON.parse(stored));
+    } catch {}
+    setLoading(false);
+  }, []);
+
+  function remove(id: string) {
+    const updated = saved.filter(p => p.id !== id);
+    setSaved(updated);
+    try { localStorage.setItem("medtracker-saved", JSON.stringify(updated)); } catch {}
+  }
+
+  if (loading) return <div style={{ ...pgWrap, textAlign: "center", color: "var(--text3)" }}>Loading…</div>;
+
+  return (
+    <div style={pgWrap}>
+      <h1 style={{ fontSize: 24, fontWeight: 700, color: "var(--text)", margin: "0 0 4px" }}>Saved Products</h1>
+      <p style={{ color: "var(--text3)", fontSize: 14, margin: "0 0 32px" }}>Products you saved to compare or buy later.</p>
+
+      {saved.length === 0 ? (
+        <div style={{ border: "1px dashed var(--border)", borderRadius: 10, padding: "60px 24px", textAlign: "center", color: "var(--text3)", fontSize: 14 }}>
+          No saved products yet. Browse products and tap the heart icon to save them here.
+          <br /><br />
+          <button onClick={() => setPage("search")} style={greenBtn}>Browse Products</button>
+        </div>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          {saved.map(p => {
+            const best = [...p.prices].sort((a, b) => a.price - b.price)[0];
+            return (
+              <div key={p.id} style={{ ...card, display: "flex", gap: 16, alignItems: "center", cursor: "pointer" }}
+                onClick={() => { setSelectedProduct(p); setPage("product"); }}>
+                <img src={p.image} alt={p.name} style={{ width: 60, height: 60, objectFit: "contain", borderRadius: 6, background: "var(--bg)", flexShrink: 0 }} onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 15, fontWeight: 600, color: "var(--text)", marginBottom: 2 }}>{p.name}</div>
+                  <div style={{ fontSize: 12, color: "var(--text3)", marginBottom: 6 }}>{p.brand}</div>
+                  {best && <div style={{ fontSize: 15, color: "#adff2f", fontWeight: 700 }}>from ₹{best.price.toLocaleString()}</div>}
+                </div>
+                <button onClick={e => { e.stopPropagation(); remove(p.id); }} style={{ background: "none", border: "none", cursor: "pointer", color: "#ff5555", fontSize: 20, padding: "4px 8px" }} title="Remove">×</button>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Price Alerts Page ──
+interface PriceAlert { productId: string; productName: string; currentPrice: number; targetPrice: number; store: string; }
+function PriceAlertsPage({ setPage, setSelectedProduct }: { setPage: (p: Page) => void; setSelectedProduct: (p: Product) => void }) {
+  const [alerts, setAlerts] = useState<PriceAlert[]>([]);
+
+  useEffect(() => {
+    try { const s = localStorage.getItem("medtracker-alerts"); if (s) setAlerts(JSON.parse(s)); } catch {}
+  }, []);
+
+  function remove(id: string) {
+    const updated = alerts.filter(a => a.productId !== id);
+    setAlerts(updated);
+    try { localStorage.setItem("medtracker-alerts", JSON.stringify(updated)); } catch {}
+  }
+
+  return (
+    <div style={pgWrap}>
+      <h1 style={{ fontSize: 24, fontWeight: 700, color: "var(--text)", margin: "0 0 4px" }}>Price Alerts</h1>
+      <p style={{ color: "var(--text3)", fontSize: 14, margin: "0 0 32px" }}>Get notified when a product drops to your target price.</p>
+      {alerts.length === 0 ? (
+        <div style={{ border: "1px dashed var(--border)", borderRadius: 10, padding: "60px 24px", textAlign: "center", color: "var(--text3)", fontSize: 14 }}>
+          No price alerts set yet. Open any product and tap "Set Price Alert" to track it.
+          <br /><br />
+          <button onClick={() => setPage("search")} style={greenBtn}>Browse Products</button>
+        </div>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          {alerts.map(a => (
+            <div key={a.productId} style={card}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
+                <div>
+                  <div style={{ fontSize: 15, fontWeight: 600, color: "var(--text)", marginBottom: 4 }}>{a.productName}</div>
+                  <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+                    <span style={{ fontSize: 13, color: "var(--text3)" }}>Current: <span style={{ color: "var(--text2)" }}>₹{a.currentPrice.toLocaleString()}</span></span>
+                    <span style={{ fontSize: 13, color: "var(--text3)" }}>Alert at: <span style={{ color: "#adff2f", fontWeight: 600 }}>₹{a.targetPrice.toLocaleString()}</span></span>
+                    <span style={{ fontSize: 13, color: "var(--text3)" }}>{a.store}</span>
+                  </div>
+                </div>
+                <button onClick={() => remove(a.productId)} style={{ background: "none", border: "none", cursor: "pointer", color: "#ff5555", fontSize: 20 }}>×</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -1378,99 +1733,95 @@ function SettingsPage() {
   const supabase = createClient();
   const [user, setUser] = useState<User | null>(null);
   const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [delConfirm, setDelConfirm] = useState(false);
+  const [notifs, setNotifs] = useState({ priceAlerts: true, deals: false, reorder: false });
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
-      setUser(data.user);
-      setName(data.user?.user_metadata?.full_name ?? "");
+      const u = data.user; setUser(u);
+      setName(u?.user_metadata?.full_name ?? "");
+      setPhone(u?.user_metadata?.phone ?? "");
+      setNotifs(u?.user_metadata?.notifications ?? { priceAlerts: true, deals: false, reorder: false });
     });
   }, []);
 
   async function handleSave() {
-    await supabase.auth.updateUser({ data: { full_name: name } });
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+    setSaving(true);
+    await supabase.auth.updateUser({ data: { full_name: name, phone, notifications: notifs } });
+    setSaving(false); setSaved(true);
+    setTimeout(() => setSaved(false), 2500);
   }
 
-  const inputS: React.CSSProperties = {
-    background: "var(--card)", border: "1px solid var(--border)", borderRadius: 4,
-    padding: "10px 14px", fontSize: 14, color: "var(--text)", outline: "none", width: "100%",
-    boxSizing: "border-box", fontFamily: "inherit",
-  };
+  const inputS: React.CSSProperties = { background: "var(--card)", border: "1px solid var(--border)", borderRadius: 4, padding: "10px 14px", fontSize: 14, color: "var(--text)", outline: "none", width: "100%", boxSizing: "border-box", fontFamily: "inherit" };
 
   return (
-    <div style={{ maxWidth: 600, margin: "0 auto", padding: "100px 24px 60px" }}>
+    <div style={{ ...pgWrap, maxWidth: 620 }}>
       <h1 style={{ fontSize: 24, fontWeight: 700, color: "var(--text)", margin: "0 0 32px" }}>Account Settings</h1>
 
-      {/* Profile */}
       <section style={{ marginBottom: 36 }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text2)", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 16 }}>Profile</div>
+        <div style={secLabel}>Profile</div>
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           <div>
-            <label style={{ fontSize: 12, color: "var(--text3)", marginBottom: 6, display: "block" }}>FULL NAME</label>
+            <label style={{ fontSize: 11, color: "var(--text3)", letterSpacing: "0.08em", textTransform: "uppercase", display: "block", marginBottom: 6 }}>Full Name</label>
             <input value={name} onChange={e => { setName(e.target.value); setSaved(false); }} style={inputS}
-              onFocus={e => e.target.style.borderColor = "#adff2f"}
-              onBlur={e => e.target.style.borderColor = "var(--border)"}
-            />
+              onFocus={e => e.target.style.borderColor = "#adff2f"} onBlur={e => e.target.style.borderColor = "var(--border)"} />
           </div>
           <div>
-            <label style={{ fontSize: 12, color: "var(--text3)", marginBottom: 6, display: "block" }}>EMAIL</label>
+            <label style={{ fontSize: 11, color: "var(--text3)", letterSpacing: "0.08em", textTransform: "uppercase", display: "block", marginBottom: 6 }}>Email</label>
             <input value={user?.email ?? ""} disabled style={{ ...inputS, opacity: 0.5, cursor: "not-allowed" }} />
           </div>
-          <button onClick={handleSave} style={{
-            background: "#adff2f", color: "#0a0a0a", border: "none", borderRadius: 4,
-            padding: "10px 24px", fontSize: 13, fontWeight: 700, cursor: "pointer",
-            letterSpacing: "0.05em", textTransform: "uppercase", alignSelf: "flex-start",
-          }}>
-            {saved ? "Saved" : "Save Changes"}
-          </button>
+          <div>
+            <label style={{ fontSize: 11, color: "var(--text3)", letterSpacing: "0.08em", textTransform: "uppercase", display: "block", marginBottom: 6 }}>Phone Number</label>
+            <input value={phone} onChange={e => { setPhone(e.target.value); setSaved(false); }} placeholder="+91 00000 00000" style={inputS}
+              onFocus={e => e.target.style.borderColor = "#adff2f"} onBlur={e => e.target.style.borderColor = "var(--border)"} />
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <button onClick={handleSave} disabled={saving} style={{ ...greenBtn, opacity: saving ? 0.7 : 1 }}>
+              {saving ? "Saving…" : saved ? "Saved" : "Save Changes"}
+            </button>
+            {saved && <span style={{ fontSize: 13, color: "#adff2f" }}>Changes saved</span>}
+          </div>
         </div>
       </section>
 
       <div style={{ height: 1, background: "var(--border)", marginBottom: 36 }} />
 
-      {/* Notifications */}
       <section style={{ marginBottom: 36 }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text2)", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 16 }}>Notifications</div>
-        {[
-          { label: "Price drop alerts", sub: "Get notified when tracked products drop in price" },
-          { label: "New deals & offers", sub: "Weekly digest of best health supplement deals" },
-          { label: "Reorder reminders", sub: "Remind me when it is time to reorder" },
-        ].map(({ label, sub }) => (
-          <div key={label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingBottom: 16, marginBottom: 16, borderBottom: "1px solid var(--border)" }}>
+        <div style={secLabel}>Notifications</div>
+        {([
+          { key: "priceAlerts" as const, label: "Price drop alerts", sub: "When a product you track drops to your target price" },
+          { key: "deals" as const, label: "New deals & offers", sub: "Weekly digest of best health supplement deals" },
+          { key: "reorder" as const, label: "Reorder reminders", sub: "Remind me when it is time to reorder" },
+        ]).map(({ key, label, sub }) => (
+          <div key={key} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingBottom: 16, marginBottom: 16, borderBottom: "1px solid var(--border)" }}>
             <div>
               <div style={{ fontSize: 14, color: "var(--text)", marginBottom: 2 }}>{label}</div>
               <div style={{ fontSize: 12, color: "var(--text3)" }}>{sub}</div>
             </div>
-            <div style={{ width: 36, height: 20, borderRadius: 10, background: "var(--border)", cursor: "pointer", flexShrink: 0 }} />
+            <Toggle on={notifs[key]} onToggle={() => { setNotifs(n => ({ ...n, [key]: !n[key] })); setSaved(false); }} />
           </div>
         ))}
       </section>
 
       <div style={{ height: 1, background: "var(--border)", marginBottom: 36 }} />
 
-      {/* Danger zone */}
       <section>
-        <div style={{ fontSize: 12, fontWeight: 700, color: "#ff5555", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 16 }}>Danger Zone</div>
+        <div style={{ fontSize: 11, fontWeight: 700, color: "#ff5555", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 16 }}>Danger Zone</div>
         {!delConfirm ? (
-          <button onClick={() => setDelConfirm(true)} style={{
-            border: "1px solid #ff5555", background: "transparent", color: "#ff5555",
-            borderRadius: 4, padding: "9px 20px", fontSize: 13, cursor: "pointer", fontFamily: "inherit",
-          }}>Delete Account</button>
+          <button onClick={() => setDelConfirm(true)} style={{ border: "1px solid #ff5555", background: "transparent", color: "#ff5555", borderRadius: 4, padding: "9px 20px", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
+            Delete Account
+          </button>
         ) : (
-          <div style={{ background: "rgba(255,85,85,0.08)", border: "1px solid #ff5555", borderRadius: 6, padding: 16 }}>
-            <p style={{ color: "var(--text)", fontSize: 14, margin: "0 0 12px" }}>Are you sure? This cannot be undone. All your data will be permanently deleted.</p>
+          <div style={{ background: "rgba(255,85,85,0.06)", border: "1px solid #ff5555", borderRadius: 8, padding: 20 }}>
+            <div style={{ color: "var(--text)", fontSize: 14, marginBottom: 12, lineHeight: 1.6 }}>Are you sure? This permanently deletes your account, saved products, prescriptions and all data. This cannot be undone.</div>
             <div style={{ display: "flex", gap: 10 }}>
-              <button onClick={() => setDelConfirm(false)} style={{
-                border: "1px solid var(--border)", background: "transparent", color: "var(--text2)",
-                borderRadius: 4, padding: "8px 18px", fontSize: 13, cursor: "pointer", fontFamily: "inherit",
-              }}>Cancel</button>
-              <button style={{
-                background: "#ff5555", border: "none", color: "#fff",
-                borderRadius: 4, padding: "8px 18px", fontSize: 13, cursor: "pointer", fontFamily: "inherit",
-              }}>Yes, delete my account</button>
+              <button onClick={() => setDelConfirm(false)} style={ghostBtn}>Cancel</button>
+              <button style={{ background: "#ff5555", border: "none", color: "#fff", borderRadius: 4, padding: "9px 20px", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
+                Yes, delete everything
+              </button>
             </div>
           </div>
         )}
@@ -1517,10 +1868,10 @@ export default function MedTrackerApp() {
       case "categories": return <Categories setPage={setPage} setSearchQ={setSearchQ} />;
       case "cart": return <Cart cart={cart} setCart={setCart} />;
       case "ai": return <AiAdvisor />;
-      case "wishlist": return <AccountPage title="Saved Products" icon="♡" desc="Products you have saved to compare or buy later." empty="You have not saved any products yet. Browse and tap the save icon on any product." />;
-      case "prescriptions": return <AccountPage title="My Prescriptions" icon="⊞" desc="Upload and manage your prescriptions for quick reordering." empty="No prescriptions uploaded yet. You can upload a photo of your prescription for easy reference." />;
+      case "wishlist": return <SavedProductsPage setPage={setPage} setSelectedProduct={setSelectedProduct} />;
+      case "prescriptions": return <PrescriptionsPage />;
       case "preferences": return <PreferencesPage />;
-      case "alerts": return <AccountPage title="Price Alerts" icon="◷" desc="Get notified when a product drops to your target price." empty="No price alerts set. Open any product and tap Set Alert to track its price." />;
+      case "alerts": return <PriceAlertsPage setPage={setPage} setSelectedProduct={setSelectedProduct} />;
       case "settings": return <SettingsPage />;
     }
   };
