@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
 
 interface CartItem { product: Product; site: string; qty: number }
-type Page = "home" | "search" | "product" | "compare" | "categories" | "cart" | "ai";
+type Page = "home" | "search" | "product" | "compare" | "categories" | "cart" | "ai" | "wishlist" | "prescriptions" | "preferences" | "alerts" | "settings";
 
 // ── Chat message type ──
 interface ChatMessage { role: "user" | "bot"; text: string }
@@ -537,16 +537,47 @@ function Nav({ page, setPage, cartCount, searchQ, setSearchQ, onSearchSubmit, th
             {menuOpen && (
               <div style={{
                 position: "absolute", top: "calc(100% + 8px)", right: 0,
-                minWidth: "180px", background: "var(--card)", border: "1px solid var(--border)",
+                minWidth: "220px", background: "var(--card)", border: "1px solid var(--border)",
                 borderRadius: "8px", boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
                 padding: "6px", zIndex: 999,
               }}>
-                <div style={{ fontSize: "11px", color: "var(--text3)", padding: "4px 10px 8px", overflow: "hidden", textOverflow: "ellipsis" }}>
-                  {user.email}
+                {/* User info */}
+                <div style={{ padding: "8px 10px 10px" }}>
+                  <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--text)", marginBottom: "2px" }}>
+                    {user.user_metadata?.full_name ?? displayName}
+                  </div>
+                  <div style={{ fontSize: "11px", color: "var(--text3)", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    {user.email}
+                  </div>
                 </div>
                 <div style={{ height: "1px", background: "var(--border)", margin: "0 0 4px" }} />
+
+                {/* Menu items */}
+                {[
+                  { icon: "♡", label: "Saved Products", page: "wishlist" },
+                  { icon: "⊞", label: "My Prescriptions", page: "prescriptions" },
+                  { icon: "⊙", label: "Health Preferences", page: "preferences" },
+                  { icon: "◷", label: "Price Alerts", page: "alerts" },
+                  { icon: "⚙", label: "Account Settings", page: "settings" },
+                ].map(({ icon, label, page: p }) => (
+                  <button key={p} onClick={() => { setMenuOpen(false); setPage(p as Page); }} style={{
+                    display: "flex", alignItems: "center", gap: "10px",
+                    width: "100%", textAlign: "left", padding: "8px 10px",
+                    borderRadius: "5px", fontSize: "13px", color: "var(--text2)",
+                    background: "none", border: "none", cursor: "pointer", fontFamily: "inherit",
+                  }}
+                    onMouseOver={e => (e.currentTarget.style.background = "var(--accent-dim)")}
+                    onMouseOut={e => (e.currentTarget.style.background = "none")}
+                  >
+                    <span style={{ fontSize: "14px", width: "16px", textAlign: "center" }}>{icon}</span>
+                    {label}
+                  </button>
+                ))}
+
+                <div style={{ height: "1px", background: "var(--border)", margin: "4px 0" }} />
                 <button onClick={handleSignOut} style={{
-                  display: "block", width: "100%", textAlign: "left",
+                  display: "flex", alignItems: "center", gap: "10px",
+                  width: "100%", textAlign: "left",
                   padding: "8px 10px", borderRadius: "5px", fontSize: "13px",
                   color: "#ff5555", background: "none", border: "none",
                   cursor: "pointer", fontFamily: "inherit",
@@ -1265,6 +1296,189 @@ function AiAdvisor() {
 }
 
 // ── Main App ──
+// ── Account Page (generic placeholder) ──
+function AccountPage({ title, icon, desc, empty }: { title: string; icon: string; desc: string; empty: string }) {
+  return (
+    <div style={{ maxWidth: 700, margin: "0 auto", padding: "100px 24px 60px" }}>
+      <div style={{ marginBottom: 32 }}>
+        <div style={{ fontSize: 28, marginBottom: 8 }}>{icon}</div>
+        <h1 style={{ fontSize: 24, fontWeight: 700, color: "var(--text)", margin: "0 0 6px" }}>{title}</h1>
+        <p style={{ color: "var(--text3)", fontSize: 14, margin: 0 }}>{desc}</p>
+      </div>
+      <div style={{
+        border: "1px dashed var(--border)", borderRadius: 8,
+        padding: "48px 24px", textAlign: "center", color: "var(--text3)", fontSize: 14, lineHeight: 1.6,
+      }}>
+        {empty}
+      </div>
+    </div>
+  );
+}
+
+// ── Preferences Page ──
+function PreferencesPage() {
+  const categories = ["Vitamins & Minerals", "Protein & Fitness", "Ayurveda", "Women's Health", "Heart Health", "Diabetes", "Immunity", "Sleep & Stress", "Weight Management", "Hair & Skin"];
+  const [selected, setSelected] = useState<string[]>([]);
+  const [diet, setDiet] = useState("");
+  const [saved, setSaved] = useState(false);
+
+  function toggle(c: string) {
+    setSelected(s => s.includes(c) ? s.filter(x => x !== c) : [...s, c]);
+    setSaved(false);
+  }
+
+  return (
+    <div style={{ maxWidth: 700, margin: "0 auto", padding: "100px 24px 60px" }}>
+      <h1 style={{ fontSize: 24, fontWeight: 700, color: "var(--text)", margin: "0 0 6px" }}>Health Preferences</h1>
+      <p style={{ color: "var(--text3)", fontSize: 14, margin: "0 0 32px" }}>Personalise your experience — we show you relevant products and AI advice based on these.</p>
+
+      <div style={{ marginBottom: 28 }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text2)", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 14 }}>Health Interests</div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+          {categories.map(c => (
+            <button key={c} onClick={() => toggle(c)} style={{
+              padding: "7px 14px", borderRadius: 20, fontSize: 13, cursor: "pointer",
+              border: selected.includes(c) ? "1px solid #adff2f" : "1px solid var(--border)",
+              background: selected.includes(c) ? "rgba(173,255,47,0.12)" : "transparent",
+              color: selected.includes(c) ? "#adff2f" : "var(--text2)",
+              fontFamily: "inherit", transition: "all 0.15s",
+            }}>{c}</button>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ marginBottom: 32 }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text2)", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 10 }}>Diet Type</div>
+        <div style={{ display: "flex", gap: 8 }}>
+          {["Vegetarian", "Vegan", "Non-Vegetarian", "Jain"].map(d => (
+            <button key={d} onClick={() => { setDiet(d); setSaved(false); }} style={{
+              padding: "7px 16px", borderRadius: 20, fontSize: 13, cursor: "pointer",
+              border: diet === d ? "1px solid #adff2f" : "1px solid var(--border)",
+              background: diet === d ? "rgba(173,255,47,0.12)" : "transparent",
+              color: diet === d ? "#adff2f" : "var(--text2)",
+              fontFamily: "inherit", transition: "all 0.15s",
+            }}>{d}</button>
+          ))}
+        </div>
+      </div>
+
+      <button onClick={() => setSaved(true)} style={{
+        background: "#adff2f", color: "#0a0a0a", border: "none", borderRadius: 4,
+        padding: "11px 28px", fontSize: 13, fontWeight: 700, cursor: "pointer",
+        letterSpacing: "0.05em", textTransform: "uppercase",
+      }}>
+        {saved ? "Saved" : "Save Preferences"}
+      </button>
+    </div>
+  );
+}
+
+// ── Settings Page ──
+function SettingsPage() {
+  const supabase = createClient();
+  const [user, setUser] = useState<User | null>(null);
+  const [name, setName] = useState("");
+  const [saved, setSaved] = useState(false);
+  const [delConfirm, setDelConfirm] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      setUser(data.user);
+      setName(data.user?.user_metadata?.full_name ?? "");
+    });
+  }, []);
+
+  async function handleSave() {
+    await supabase.auth.updateUser({ data: { full_name: name } });
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  }
+
+  const inputS: React.CSSProperties = {
+    background: "var(--card)", border: "1px solid var(--border)", borderRadius: 4,
+    padding: "10px 14px", fontSize: 14, color: "var(--text)", outline: "none", width: "100%",
+    boxSizing: "border-box", fontFamily: "inherit",
+  };
+
+  return (
+    <div style={{ maxWidth: 600, margin: "0 auto", padding: "100px 24px 60px" }}>
+      <h1 style={{ fontSize: 24, fontWeight: 700, color: "var(--text)", margin: "0 0 32px" }}>Account Settings</h1>
+
+      {/* Profile */}
+      <section style={{ marginBottom: 36 }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text2)", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 16 }}>Profile</div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          <div>
+            <label style={{ fontSize: 12, color: "var(--text3)", marginBottom: 6, display: "block" }}>FULL NAME</label>
+            <input value={name} onChange={e => { setName(e.target.value); setSaved(false); }} style={inputS}
+              onFocus={e => e.target.style.borderColor = "#adff2f"}
+              onBlur={e => e.target.style.borderColor = "var(--border)"}
+            />
+          </div>
+          <div>
+            <label style={{ fontSize: 12, color: "var(--text3)", marginBottom: 6, display: "block" }}>EMAIL</label>
+            <input value={user?.email ?? ""} disabled style={{ ...inputS, opacity: 0.5, cursor: "not-allowed" }} />
+          </div>
+          <button onClick={handleSave} style={{
+            background: "#adff2f", color: "#0a0a0a", border: "none", borderRadius: 4,
+            padding: "10px 24px", fontSize: 13, fontWeight: 700, cursor: "pointer",
+            letterSpacing: "0.05em", textTransform: "uppercase", alignSelf: "flex-start",
+          }}>
+            {saved ? "Saved" : "Save Changes"}
+          </button>
+        </div>
+      </section>
+
+      <div style={{ height: 1, background: "var(--border)", marginBottom: 36 }} />
+
+      {/* Notifications */}
+      <section style={{ marginBottom: 36 }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text2)", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 16 }}>Notifications</div>
+        {[
+          { label: "Price drop alerts", sub: "Get notified when tracked products drop in price" },
+          { label: "New deals & offers", sub: "Weekly digest of best health supplement deals" },
+          { label: "Reorder reminders", sub: "Remind me when it is time to reorder" },
+        ].map(({ label, sub }) => (
+          <div key={label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingBottom: 16, marginBottom: 16, borderBottom: "1px solid var(--border)" }}>
+            <div>
+              <div style={{ fontSize: 14, color: "var(--text)", marginBottom: 2 }}>{label}</div>
+              <div style={{ fontSize: 12, color: "var(--text3)" }}>{sub}</div>
+            </div>
+            <div style={{ width: 36, height: 20, borderRadius: 10, background: "var(--border)", cursor: "pointer", flexShrink: 0 }} />
+          </div>
+        ))}
+      </section>
+
+      <div style={{ height: 1, background: "var(--border)", marginBottom: 36 }} />
+
+      {/* Danger zone */}
+      <section>
+        <div style={{ fontSize: 12, fontWeight: 700, color: "#ff5555", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 16 }}>Danger Zone</div>
+        {!delConfirm ? (
+          <button onClick={() => setDelConfirm(true)} style={{
+            border: "1px solid #ff5555", background: "transparent", color: "#ff5555",
+            borderRadius: 4, padding: "9px 20px", fontSize: 13, cursor: "pointer", fontFamily: "inherit",
+          }}>Delete Account</button>
+        ) : (
+          <div style={{ background: "rgba(255,85,85,0.08)", border: "1px solid #ff5555", borderRadius: 6, padding: 16 }}>
+            <p style={{ color: "var(--text)", fontSize: 14, margin: "0 0 12px" }}>Are you sure? This cannot be undone. All your data will be permanently deleted.</p>
+            <div style={{ display: "flex", gap: 10 }}>
+              <button onClick={() => setDelConfirm(false)} style={{
+                border: "1px solid var(--border)", background: "transparent", color: "var(--text2)",
+                borderRadius: 4, padding: "8px 18px", fontSize: 13, cursor: "pointer", fontFamily: "inherit",
+              }}>Cancel</button>
+              <button style={{
+                background: "#ff5555", border: "none", color: "#fff",
+                borderRadius: 4, padding: "8px 18px", fontSize: 13, cursor: "pointer", fontFamily: "inherit",
+              }}>Yes, delete my account</button>
+            </div>
+          </div>
+        )}
+      </section>
+    </div>
+  );
+}
+
 export default function MedTrackerApp() {
   const [page, setPage] = useState<Page>("home");
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -1303,6 +1517,11 @@ export default function MedTrackerApp() {
       case "categories": return <Categories setPage={setPage} setSearchQ={setSearchQ} />;
       case "cart": return <Cart cart={cart} setCart={setCart} />;
       case "ai": return <AiAdvisor />;
+      case "wishlist": return <AccountPage title="Saved Products" icon="♡" desc="Products you have saved to compare or buy later." empty="You have not saved any products yet. Browse and tap the save icon on any product." />;
+      case "prescriptions": return <AccountPage title="My Prescriptions" icon="⊞" desc="Upload and manage your prescriptions for quick reordering." empty="No prescriptions uploaded yet. You can upload a photo of your prescription for easy reference." />;
+      case "preferences": return <PreferencesPage />;
+      case "alerts": return <AccountPage title="Price Alerts" icon="◷" desc="Get notified when a product drops to your target price." empty="No price alerts set. Open any product and tap Set Alert to track its price." />;
+      case "settings": return <SettingsPage />;
     }
   };
 
