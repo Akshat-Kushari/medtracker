@@ -3,6 +3,8 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { PRODUCTS as STATIC_PRODUCTS, CATEGORIES, SITES, disc } from "./data";
 import type { Product } from "./data";
 import { fetchProducts, searchProducts } from "./api";
+import { createClient } from "@/lib/supabase";
+import type { User } from "@supabase/supabase-js";
 
 interface CartItem { product: Product; site: string; qty: number }
 type Page = "home" | "search" | "product" | "compare" | "categories" | "cart" | "ai";
@@ -452,6 +454,36 @@ function Nav({ page, setPage, cartCount, searchQ, setSearchQ, onSearchSubmit, th
   cartCount: number; searchQ: string; setSearchQ: (q: string) => void;
   onSearchSubmit: () => void; theme: string; toggleTheme: () => void;
 }) {
+  const supabase = createClient();
+  const [user, setUser] = useState<User | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => setUser(data.user));
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => setUser(session?.user ?? null));
+    return () => subscription.unsubscribe();
+  }, []);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false);
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  const displayName = user?.user_metadata?.full_name?.split(" ")[0] ?? user?.email?.split("@")[0] ?? "";
+  const initials = (user?.user_metadata?.full_name ?? user?.email ?? "")
+    .split(" ").map((p: string) => p[0]).join("").toUpperCase().slice(0, 2) || "?";
+
+  async function handleSignOut() {
+    setMenuOpen(false);
+    await supabase.auth.signOut();
+    setUser(null);
+  }
+
   return (
     <nav>
       <div className="nav-logo" onClick={() => setPage("home")}>MEDTRACKER</div>
@@ -475,6 +507,76 @@ function Nav({ page, setPage, cartCount, searchQ, setSearchQ, onSearchSubmit, th
         <button className="theme-toggle" onClick={toggleTheme} title="Toggle light/dark">
           {theme === "dark" ? "☀" : "☾"}
         </button>
+
+        {user ? (
+          <div ref={menuRef} style={{ position: "relative" }}>
+            <button
+              onClick={() => setMenuOpen(o => !o)}
+              style={{
+                display: "flex", alignItems: "center", gap: "7px",
+                background: "transparent", border: "1px solid var(--border)",
+                borderRadius: "20px", padding: "5px 12px 5px 5px",
+                cursor: "pointer", color: "var(--text2)", fontSize: "13px",
+                transition: "var(--transition)", fontFamily: "inherit",
+              }}
+            >
+              <div style={{
+                width: "24px", height: "24px", borderRadius: "50%",
+                background: "#adff2f", color: "#0a0a0a",
+                fontSize: "10px", fontWeight: 700,
+                display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+              }}>{initials}</div>
+              <span style={{ maxWidth: "80px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                {displayName}
+              </span>
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">
+                <path d="M5 7L1 3h8z"/>
+              </svg>
+            </button>
+
+            {menuOpen && (
+              <div style={{
+                position: "absolute", top: "calc(100% + 8px)", right: 0,
+                minWidth: "180px", background: "var(--card)", border: "1px solid var(--border)",
+                borderRadius: "8px", boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
+                padding: "6px", zIndex: 999,
+              }}>
+                <div style={{ fontSize: "11px", color: "var(--text3)", padding: "4px 10px 8px", overflow: "hidden", textOverflow: "ellipsis" }}>
+                  {user.email}
+                </div>
+                <div style={{ height: "1px", background: "var(--border)", margin: "0 0 4px" }} />
+                <button onClick={handleSignOut} style={{
+                  display: "block", width: "100%", textAlign: "left",
+                  padding: "8px 10px", borderRadius: "5px", fontSize: "13px",
+                  color: "#ff5555", background: "none", border: "none",
+                  cursor: "pointer", fontFamily: "inherit",
+                }}
+                  onMouseOver={e => (e.currentTarget.style.background = "rgba(255,85,85,0.1)")}
+                  onMouseOut={e => (e.currentTarget.style.background = "none")}
+                >
+                  Sign out
+                </button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+            <a href="/login" style={{
+              padding: "6px 14px", borderRadius: "20px", border: "1px solid var(--border)",
+              background: "transparent", color: "var(--text2)", fontSize: "13px",
+              cursor: "pointer", textDecoration: "none", fontFamily: "inherit",
+            }}>
+              Login
+            </a>
+            <a href="/register" style={{
+              padding: "6px 14px", borderRadius: "20px", border: "1px solid #adff2f",
+              background: "#adff2f", color: "#0a0a0a", fontSize: "13px", fontWeight: 700,
+              cursor: "pointer", textDecoration: "none", fontFamily: "inherit",
+            }}>
+              Sign up
+            </a>
+          </div>
+        )}
       </div>
     </nav>
   );
